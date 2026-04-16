@@ -1111,7 +1111,7 @@ input,select,textarea{font-family:'DM Sans',sans-serif;outline:none;}
   <!-- ══ PROFISSIONAIS ══ -->
   <div class="page" id="page-profissionais">
     <div style="display:flex;justify-content:flex-end;margin-bottom:20px;">
-      <button class="btn btn-primary">+ Adicionar profissional</button>
+      <button class="btn btn-primary" onclick="abrirModalProfissional()">+ Adicionar profissional</button>
     </div>
     <div class="prof-grid">
       <div class="prof-card">
@@ -1827,6 +1827,41 @@ input,select,textarea{font-family:'DM Sans',sans-serif;outline:none;}
 </div><!-- /app -->
 
 <!-- ── MODAL NOVO AGENDAMENTO ── -->
+<div class="modal-overlay" id="modalProfissional" onclick="if(event.target===this)fecharModalProfissional()">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Novo Profissional</div>
+      <button class="modal-close" onclick="fecharModalProfissional()">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label class="form-label">Nome completo *</label>
+        <input class="form-control" id="profNome" placeholder="Ex: Ana Paula Santos">
+      </div>
+      <div>
+        <label class="form-label">Especialidade</label>
+        <input class="form-control" id="profEspecialidade" placeholder="Ex: Colorista, Manicure, Cabeleireira">
+      </div>
+      <div>
+        <label class="form-label">Telefone / WhatsApp</label>
+        <input class="form-control" id="profTelefone" placeholder="(11) 99999-0000">
+      </div>
+      <div>
+        <label class="form-label">E-mail</label>
+        <input class="form-control" id="profEmail" type="email" placeholder="ana@email.com">
+      </div>
+      <div>
+        <label class="form-label">Comissão (%)</label>
+        <input class="form-control" id="profComissao" type="number" min="0" max="100" placeholder="40" value="40">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModalProfissional()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarProfissional()">✓ Salvar profissional</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-header">
@@ -2015,6 +2050,76 @@ document.querySelector('.chat-send').addEventListener('click', function() {
 // ═══════════════════════════════════════════════════
 // INTEGRAÇÃO SUPABASE — Dados reais
 // ═══════════════════════════════════════════════════
+
+// ── MODAL PROFISSIONAL ──────────────────────────────
+function abrirModalProfissional() {
+  ['profNome','profEspecialidade','profTelefone','profEmail'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const comissao = document.getElementById('profComissao');
+  if (comissao) comissao.value = '40';
+  document.getElementById('modalProfissional').classList.add('show');
+}
+
+function fecharModalProfissional() {
+  document.getElementById('modalProfissional').classList.remove('show');
+}
+
+async function salvarProfissional() {
+  const nome = document.getElementById('profNome').value.trim();
+  if (!nome) { alert('Digite o nome do profissional.'); return; }
+
+  const especialidade = document.getElementById('profEspecialidade').value.trim();
+  const telefone      = document.getElementById('profTelefone').value.trim();
+  const email         = document.getElementById('profEmail').value.trim();
+  const comissao      = parseFloat(document.getElementById('profComissao').value) || 40;
+
+  const btn = document.querySelector('#modalProfissional .btn-primary');
+  btn.disabled = true; btn.textContent = 'Salvando...';
+
+  const { data, error } = await sb.from('profissionais').insert({
+    salao_id: SALAO_DEMO_ID, nome,
+    especialidade: especialidade || null,
+    telefone: telefone || null,
+    email: email || null,
+    comissao_percentual: comissao,
+    ativo: true,
+  }).select().single();
+
+  btn.disabled = false; btn.textContent = '✓ Salvar profissional';
+
+  if (error) { alert('Erro ao salvar: ' + error.message); return; }
+
+  fecharModalProfissional();
+
+  // Adicionar card na grade
+  const cores = ['#E8614A','#4A90D9','#4CAF7D','#F5A623','#9E8070'];
+  const cor = cores[Math.floor(Math.random() * cores.length)];
+  const grid = document.querySelector('#page-profissionais .prof-grid');
+  if (grid) {
+    const card = document.createElement('div');
+    card.className = 'prof-card';
+    card.innerHTML = `
+      <div class="prof-card-avatar" style="background:${cor};">${nome[0].toUpperCase()}</div>
+      <div class="prof-card-name">${nome}</div>
+      <div class="prof-card-role">${especialidade || 'Profissional'}</div>
+      <div class="rating">— <span>(novo)</span></div>
+      <div class="prof-card-stats">
+        <div class="pcs-item"><div class="pcs-val">0</div><div class="pcs-label">hoje</div></div>
+        <div class="pcs-item"><div class="pcs-val">0</div><div class="pcs-label">este mês</div></div>
+        <div class="pcs-item"><div class="pcs-val">${comissao}%</div><div class="pcs-label">comissão</div></div>
+      </div>`;
+    grid.appendChild(card);
+  }
+
+  // Toast de sucesso
+  const toast = document.createElement('div');
+  toast.textContent = `✅ ${nome} adicionada com sucesso!`;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1410;color:#fff;padding:12px 24px;border-radius:50px;font-size:0.85rem;font-weight:500;z-index:999;';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+// ────────────────────────────────────────────────────
 
 async function carregarDashboard() {
   try {
