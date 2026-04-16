@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vem se Cuidar — Sistema para Salão de Beleza</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose:    #E8614A;
+    --rose-lt: #F2977F;
+    --cream:   #FAF6F0;
+    --sand:    #EDE4D6;
+    --dark:    #1A1410;
+    --mid:     #5C4A3A;
+    --soft:    #9E8070;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 5%;
+    background: rgba(250,246,240,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(92,74,58,0.1);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--dark);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--rose); font-style: italic; }
+  .nav-cta {
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+  }
+  .nav-cta:hover { background: #d04f38; transform: translateY(-1px); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 100px 5% 60px;
+    gap: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -120px; right: -120px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(232,97,74,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -80px; left: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(237,228,214,0.8) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-text { position: relative; z-index: 1; }
+  .hero-badge {
+    display: inline-block;
+    background: var(--sand);
+    color: var(--mid);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--dark);
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--rose);
+  }
+  .hero-sub {
+    font-size: 1.05rem;
+    color: var(--mid);
+    line-height: 1.7;
+    max-width: 480px;
+    margin-bottom: 40px;
+    font-weight: 300;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-actions {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--rose);
+    color: #fff;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: #d04f38; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,97,74,0.3); }
+  .btn-secondary {
+    background: transparent;
+    color: var(--dark);
+    border: 1.5px solid rgba(92,74,58,0.25);
+    padding: 16px 32px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-secondary:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* Hero visual */
+  .hero-visual {
+    position: relative; z-index: 1;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+  .phone-mockup {
+    background: var(--dark);
+    border-radius: 36px;
+    padding: 14px;
+    max-width: 300px;
+    margin: 0 auto;
+    box-shadow: 0 32px 80px rgba(26,20,16,0.25), 0 0 0 1px rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .phone-screen {
+    background: #fff;
+    border-radius: 26px;
+    overflow: hidden;
+    aspect-ratio: 9/18;
+  }
+  .phone-header {
+    background: var(--rose);
+    padding: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .phone-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem;
+  }
+  .phone-name { color: #fff; font-size: 0.85rem; font-weight: 500; }
+  .phone-status { color: rgba(255,255,255,0.7); font-size: 0.7rem; }
+  .chat-body { padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #f5f5f5; min-height: 200px; }
+  .msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 0.75rem; line-height: 1.4; }
+  .msg-in { background: #fff; border-bottom-left-radius: 4px; align-self: flex-start; color: #333; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .msg-out { background: var(--rose); color: #fff; border-bottom-right-radius: 4px; align-self: flex-end; }
+  .msg-time { font-size: 0.6rem; opacity: 0.6; margin-top: 4px; text-align: right; }
+  .typing { display: flex; gap: 4px; align-items: center; padding: 10px 14px; background: #fff; border-radius: 18px; border-bottom-left-radius: 4px; align-self: flex-start; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+  .dot { width: 6px; height: 6px; background: #bbb; border-radius: 50%; animation: bounce 1.2s infinite; }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+
+  /* floating badge */
+  .float-badge {
+    position: absolute;
+    background: #fff;
+    border-radius: 16px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 32px rgba(26,20,16,0.15);
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+  .float-badge-1 { top: 10%; right: -40px; }
+  .float-badge-2 { bottom: 15%; left: -50px; }
+  .fb-label { font-weight: 500; color: var(--dark); }
+  .fb-val { color: var(--rose); font-weight: 700; font-size: 1rem; }
+
+  /* ── SOCIAL PROOF ── */
+  .social-proof {
+    padding: 32px 5%;
+    background: var(--sand);
+    display: flex; align-items: center; justify-content: center;
+    gap: 48px; flex-wrap: wrap;
+  }
+  .sp-item { text-align: center; }
+  .sp-num { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--dark); font-weight: 700; }
+  .sp-label { font-size: 0.8rem; color: var(--mid); font-weight: 300; margin-top: 2px; }
+  .sp-divider { width: 1px; height: 40px; background: rgba(92,74,58,0.2); }
+
+  /* ── FEATURES ── */
+  .features {
+    padding: 100px 5%;
+    max-width: 1100px; margin: 0 auto;
+  }
+  .section-label {
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--rose); font-weight: 500; margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 60px;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 28px;
+  }
+  .feat-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid rgba(237,228,214,0.8);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--rose);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .feat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(26,20,16,0.1); }
+  .feat-card:hover::before { transform: scaleX(1); }
+  .feat-icon {
+    width: 48px; height: 48px;
+    background: var(--sand);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+  }
+  .feat-title { font-weight: 500; font-size: 1rem; margin-bottom: 8px; }
+  .feat-desc { font-size: 0.88rem; color: var(--mid); line-height: 1.65; font-weight: 300; }
+  .feat-new {
+    display: inline-block;
+    background: rgba(232,97,74,0.1);
+    color: var(--rose);
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── HOW IT WORKS ── */
+  .how {
+    padding: 80px 5%;
+    background: var(--dark);
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .how::before {
+    content: '';
+    position: absolute; top: -200px; right: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(232,97,74,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .how .section-title { color: #fff; margin-bottom: 56px; max-width: 500px; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; position: relative; }
+  .steps::before {
+    content: '';
+    position: absolute; top: 28px; left: 10%; right: 10%; height: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+  .step { text-align: center; padding: 0 20px; position: relative; }
+  .step-num {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--rose);
+    color: #fff;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    position: relative; z-index: 1;
+  }
+  .step-title { font-weight: 500; margin-bottom: 10px; font-size: 0.95rem; }
+  .step-desc { font-size: 0.82rem; color: rgba(255,255,255,0.5); line-height: 1.6; font-weight: 300; }
+
+  /* ── PRICING ── */
+  .pricing {
+    padding: 100px 5%;
+    max-width: 960px; margin: 0 auto;
+    text-align: center;
+  }
+  .pricing .section-title { margin-bottom: 16px; }
+  .pricing-sub { color: var(--mid); margin-bottom: 56px; font-weight: 300; }
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; }
+  .plan {
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 28px;
+    border: 1.5px solid rgba(237,228,214,0.8);
+    text-align: left;
+    transition: transform 0.2s;
+  }
+  .plan:hover { transform: translateY(-4px); }
+  .plan.featured {
+    background: var(--dark);
+    color: #fff;
+    border-color: var(--dark);
+    position: relative;
+  }
+  .plan-tag {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--rose); color: #fff;
+    font-size: 0.72rem; font-weight: 600;
+    padding: 4px 16px; border-radius: 50px;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .plan-name { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--soft); font-weight: 500; margin-bottom: 8px; }
+  .plan.featured .plan-name { color: rgba(255,255,255,0.5); }
+  .plan-price { font-family: 'Playfair Display', serif; font-size: 2.4rem; margin-bottom: 4px; }
+  .plan-period { font-size: 0.8rem; color: var(--soft); margin-bottom: 28px; }
+  .plan.featured .plan-period { color: rgba(255,255,255,0.4); }
+  .plan-features { list-style: none; margin-bottom: 32px; }
+  .plan-features li { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; padding: 7px 0; font-weight: 300; border-bottom: 1px solid rgba(237,228,214,0.4); color: var(--mid); }
+  .plan.featured .plan-features li { color: rgba(255,255,255,0.7); border-bottom-color: rgba(255,255,255,0.08); }
+  .plan-features li::before { content: '✓'; color: var(--rose); font-weight: 700; font-size: 0.8rem; }
+  .plan-btn {
+    width: 100%; padding: 14px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    text-align: center; border: none;
+  }
+  .plan-btn-outline { background: transparent; border: 1.5px solid rgba(92,74,58,0.25); color: var(--dark); }
+  .plan-btn-outline:hover { border-color: var(--rose); color: var(--rose); }
+  .plan-btn-filled { background: var(--rose); color: #fff; }
+  .plan-btn-filled:hover { background: #d04f38; box-shadow: 0 8px 24px rgba(232,97,74,0.3); }
+
+  /* ── BETA FORM ── */
+  .beta {
+    padding: 100px 5%;
+    background: var(--sand);
+    text-align: center;
+  }
+  .beta-inner {
+    max-width: 560px; margin: 0 auto;
+  }
+  .beta .section-title { margin-bottom: 12px; }
+  .beta-sub { color: var(--mid); margin-bottom: 40px; font-weight: 300; line-height: 1.7; }
+  .form-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .form-input {
+    flex: 1; min-width: 200px;
+    background: #fff;
+    border: 1.5px solid rgba(92,74,58,0.15);
+    border-radius: 50px;
+    padding: 14px 22px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--rose); }
+  .form-input::placeholder { color: var(--soft); }
+  .form-btn {
+    background: var(--rose); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 14px 28px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 500;
+    cursor: pointer; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .form-btn:hover { background: #d04f38; transform: translateY(-1px); }
+  .form-note { font-size: 0.75rem; color: var(--soft); margin-top: 14px; }
+
+  /* Success state */
+  .form-success { display: none; text-align: center; padding: 20px; }
+  .form-success.show { display: block; }
+  .success-icon { font-size: 2.5rem; margin-bottom: 12px; }
+  .success-msg { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 8px; }
+  .success-sub { color: var(--mid); font-size: 0.85rem; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 5%;
+    background: var(--dark);
+    color: rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+    font-size: 0.8rem;
+  }
+  footer .logo { color: #fff; font-size: 1.1rem; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-5px); }
+  }
+
+  /* ── RESPONSIVE — MOBILE FIRST ── */
+  @media (max-width: 768px) {
+    nav { padding: 14px 5%; }
+    .logo { font-size: 1.1rem; }
+    .nav-cta { padding: 8px 16px; font-size: 0.78rem; }
+
+    .hero {
+      grid-template-columns: 1fr;
+      padding: 80px 5% 48px;
+      gap: 32px;
+      min-height: auto;
+      text-align: center;
+    }
+    .hero::before, .hero::after { display: none; }
+    .hero-badge { font-size: 0.7rem; }
+    .hero h1 { font-size: 2rem; }
+    .hero-sub { font-size: 0.9rem; margin-bottom: 28px; }
+    .hero-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .btn-primary, .btn-secondary {
+      width: 100%;
+      text-align: center;
+      padding: 15px 20px;
+      font-size: 0.95rem;
+    }
+    .hero-visual { display: none; }
+
+    .social-proof {
+      gap: 20px;
+      padding: 24px 5%;
+      justify-content: space-between;
+    }
+    .sp-divider { display: none; }
+    .sp-item { flex: 1; min-width: 0; }
+    .sp-num { font-size: 1.4rem; }
+    .sp-label { font-size: 0.65rem; }
+
+    .features { padding: 60px 5%; }
+    .section-title { font-size: 1.6rem; margin-bottom: 32px; }
+    .features-grid { grid-template-columns: 1fr; gap: 16px; }
+    .feat-card { padding: 20px; }
+
+    .how { padding: 56px 5%; }
+    .how .section-title { margin-bottom: 40px; }
+    .steps {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+    .steps::before { display: none; }
+    .step { padding: 0; display: flex; align-items: flex-start; gap: 16px; text-align: left; }
+    .step-num { width: 44px; height: 44px; font-size: 1rem; flex-shrink: 0; margin: 0; }
+
+    .pricing { padding: 60px 5%; }
+    .plans { grid-template-columns: 1fr; gap: 20px; }
+    .plan { padding: 28px 20px; }
+    .plan.featured { margin: 8px 0; }
+
+    .beta { padding: 60px 5%; }
+    .beta .section-title { font-size: 1.6rem; }
+    .form-row { flex-direction: column; gap: 10px; }
+    .form-input { min-width: 0; width: 100%; padding: 13px 18px; }
+    .form-btn { width: 100%; padding: 14px; }
+
+    footer {
+      flex-direction: column;
+      text-align: center;
+      padding: 28px 5%;
+      gap: 8px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .hero h1 { font-size: 1.7rem; }
+    .social-proof { flex-wrap: wrap; gap: 16px; }
+    .sp-item { min-width: 40%; }
+  }
+</style>
+
+<!-- ═══ SUPABASE CONFIG ═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://xxxjoaccaxxonzdfpgjj.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGpvYWNjYXh4b256ZGZwZ2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjkzMDksImV4cCI6MjA5MTk0NTMwOX0.Gv9tYOH5REGE2XYjl-bcliJDMugsOe3L8tP7pQd1hkA';
+  const SALAO_DEMO_ID = 'a1b2c3d4-0000-0000-0000-000000000001';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<!-- ════════════════════════════════════════════════════════════════ -->
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Vem se <span>Cuidar</span></div>
+  <a href="#beta" class="nav-cta">Quero acesso beta</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">🌸 Novo sistema para salões</div>
+    <h1>Seu salão cheio,<br>sua agenda <em>organizada,</em><br>sem esforço nenhum.</h1>
+    <p class="hero-sub">O único sistema de gestão com agente de IA no WhatsApp que agenda, confirma, reativa e faz follow-up das suas clientes — enquanto você cuida do que importa.</p>
+    <div class="hero-actions">
+      <a href="#beta" class="btn-primary">Quero entrar no beta gratuito</a>
+      <a href="#features" class="btn-secondary">Ver funcionalidades</a>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div style="position:relative;">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="phone-avatar">💅</div>
+            <div>
+              <div class="phone-name">Vem se Cuidar</div>
+              <div class="phone-status">● online agora</div>
+            </div>
+          </div>
+          <div class="chat-body">
+            <div class="msg msg-in">Oi! Queria marcar uma escova pra sexta 🙂<div class="msg-time">14:03</div></div>
+            <div class="msg msg-out">Oi Fernanda! 💕 Que ótimo! Tenho horários às 10h, 14h e 16h na sexta com a Carol. Qual você prefere?<div class="msg-time">14:03</div></div>
+            <div class="msg msg-in">14h tá perfeito!<div class="msg-time">14:04</div></div>
+            <div class="msg msg-out">Marcado! ✅ Sexta às 14h com Carol. Vou te lembrar na véspera. Até lá! 🌸<div class="msg-time">14:04</div></div>
+            <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="float-badge float-badge-1">
+        <div class="fb-label">Agendamentos hoje</div>
+        <div class="fb-val">↑ 12 confirmados</div>
+      </div>
+      <div class="float-badge float-badge-2">
+        <div class="fb-label">Faltas este mês</div>
+        <div class="fb-val">↓ 0 faltas</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<div class="social-proof">
+  <div class="sp-item"><div class="sp-num">850+</div><div class="sp-label">salões em lista de espera</div></div>
+  <div class="sp-divider"></div>
+  <div class="sp-item"><div class="sp-num">97%</div><div class="sp-label">redução de faltas com lembretes</div></div>
+  <div class="sp-divider"></div>
+  <div class="sp-item"><div class="sp-num">3×</div><div class="sp-label">mais clientes reativadas por mês</div></div>
+  <div class="sp-divider"></div>
+  <div class="sp-item"><div class="sp-num">R$0</div><div class="sp-label">no período beta</div></div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">Funcionalidades</div>
+  <h2 class="section-title">Tudo que seu salão precisa,<br>num só lugar.</h2>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🤖</div>
+      <div class="feat-title">Agente IA no WhatsApp <span class="feat-new">novo</span></div>
+      <div class="feat-desc">Atende, agenda e confirma as clientes automaticamente pelo WhatsApp — como se fosse uma recepcionista digital 24h. Sem robôs chatos, com conversa natural.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <div class="feat-title">Agenda Online Inteligente</div>
+      <div class="feat-desc">Clientes marcam horários a qualquer hora, pelo celular. Você vê tudo em tempo real, com lista de espera automática quando o horário está cheio.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💌</div>
+      <div class="feat-title">Reativação Automática <span class="feat-new">novo</span></div>
+      <div class="feat-desc">O sistema identifica clientes que sumiram há X dias e envia mensagem carinhosa automaticamente. Sem você fazer nada — a cliente volta sozinha.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📸</div>
+      <div class="feat-title">Portfólio por Cliente <span class="feat-new">novo</span></div>
+      <div class="feat-desc">Registre fotos do trabalho diretamente no perfil da cliente. Histórico completo: o que fez, quando foi, qual profissional atendeu.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <div class="feat-title">Comissões e Cadeira</div>
+      <div class="feat-desc">Divisão automática de comissão entre salão e profissionais autônomos que alugam cadeira. Transparência total para todo mundo.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📊</div>
+      <div class="feat-title">Relatórios que Fazem Sentido</div>
+      <div class="feat-desc">Veja quais serviços rendem mais, qual profissional tem melhor taxa de retorno e quais clientes são mais fiéis — tudo numa tela simples.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div style="max-width:1100px;margin:0 auto;position:relative;z-index:1;">
+    <div class="section-label" style="color:var(--rose-lt);">Como funciona</div>
+    <h2 class="section-title">Pronto em menos<br>de 10 minutos.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Cadastre seu salão</div>
+        <div class="step-desc">Crie sua conta, adicione seus profissionais e serviços em poucos cliques.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Conecte o WhatsApp</div>
+        <div class="step-desc">Linka o número do seu salão. O agente IA já fica ativo para responder.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Compartilhe o link</div>
+        <div class="step-desc">Divulgue seu link de agendamento no Instagram, bio, stories e stories.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">Relaxa e atende</div>
+        <div class="step-desc">As clientes agendam, o sistema confirma. Você só abre a agenda e trabalha.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-label">Planos</div>
+  <h2 class="section-title">Simples e sem surpresas.</h2>
+  <p class="pricing-sub">Escolha o plano certo para o seu momento. Cancele quando quiser.</p>
+  <div class="plans">
+    <div class="plan">
+      <div class="plan-name">Solo</div>
+      <div class="plan-price">R$67</div>
+      <div class="plan-period">/mês · 1 profissional</div>
+      <ul class="plan-features">
+        <li>Agendamento online</li>
+        <li>Lembretes automáticos</li>
+        <li>Perfil da cliente</li>
+        <li>Relatórios básicos</li>
+      </ul>
+      <button class="plan-btn plan-btn-outline" onclick="document.getElementById('beta').scrollIntoView()">Começar grátis</button>
+    </div>
+    <div class="plan featured">
+      <div class="plan-tag">✨ Mais popular</div>
+      <div class="plan-name">Studio</div>
+      <div class="plan-price" style="color:#fff;">R$147</div>
+      <div class="plan-period">/mês · até 5 profissionais</div>
+      <ul class="plan-features">
+        <li>Tudo do Solo</li>
+        <li>Agente IA no WhatsApp</li>
+        <li>Reativação automática</li>
+        <li>Portfólio por cliente</li>
+        <li>Lista de espera</li>
+      </ul>
+      <button class="plan-btn plan-btn-filled" onclick="document.getElementById('beta').scrollIntoView()">Quero esse</button>
+    </div>
+    <div class="plan">
+      <div class="plan-name">Salão</div>
+      <div class="plan-price">R$297</div>
+      <div class="plan-period">/mês · profissionais ilimitados</div>
+      <ul class="plan-features">
+        <li>Tudo do Studio</li>
+        <li>Comissão e cadeira</li>
+        <li>Relatórios avançados</li>
+        <li>Multi-unidades</li>
+        <li>Suporte prioritário</li>
+      </ul>
+      <button class="plan-btn plan-btn-outline" onclick="document.getElementById('beta').scrollIntoView()">Começar grátis</button>
+    </div>
+  </div>
+</section>
+
+<!-- BETA FORM -->
+<section class="beta" id="beta">
+  <div class="beta-inner">
+    <div class="section-label">Acesso antecipado</div>
+    <h2 class="section-title">Entre no beta gratuito.</h2>
+    <p class="beta-sub">Estamos selecionando os primeiros salões parceiros. Você usa de graça durante o período beta e ainda ajuda a moldar o produto.</p>
+
+    <div id="formContainer">
+      <div class="form-row">
+        <input type="text" class="form-input" id="nameInput" placeholder="Nome do seu salão" />
+        <input type="tel" class="form-input" id="phoneInput" placeholder="WhatsApp" />
+      </div>
+      <div class="form-row" style="margin-top:12px;">
+        <input type="email" class="form-input" id="emailInput" placeholder="Seu melhor e-mail" />
+        <button class="form-btn" onclick="submitForm()">Quero entrar →</button>
+      </div>
+      <p class="form-note">🔒 Sem spam. Você recebe apenas a confirmação e o acesso quando estiver pronto.</p>
+    </div>
+
+    <div class="form-success" id="formSuccess">
+      <div class="success-icon">🌸</div>
+      <div class="success-msg">Você está na lista!</div>
+      <div class="success-sub">Avisaremos assim que o seu acesso estiver pronto. Fique de olho no WhatsApp!</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="logo">Vem se <span style="color:var(--rose);font-style:italic;">Cuidar</span></div>
+  <div>© 2025 Vem se Cuidar · Feito com 💕 para quem faz a beleza acontecer</div>
+</footer>
+
+<script>
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href'))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Form submission
+  function submitForm() {
+    const name  = document.getElementById('nameInput').value.trim();
+    const phone = document.getElementById('phoneInput').value.trim();
+    const email = document.getElementById('emailInput').value.trim();
+
+    if (!name || !email) {
+      document.getElementById('nameInput').style.borderColor = !name  ? '#E8614A' : '';
+      document.getElementById('emailInput').style.borderColor = !email ? '#E8614A' : '';
+      return;
+    }
+
+    // Simulate submission
+    document.getElementById('formContainer').style.display = 'none';
+    document.getElementById('formSuccess').classList.add('show');
+
+    // Here you'd integrate with your email tool (Mailchimp, ConvertKit, etc.)
+    console.log('Lead captured:', { name, phone, email });
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.feat-card, .plan, .step').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>

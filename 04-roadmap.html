@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vem se Cuidar — Roadmap do Projeto</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rose:#E8614A;--rose-lt:#F2977F;--rose-bg:rgba(232,97,74,0.08);
+  --cream:#FAF6F0;--sand:#EDE4D6;--sand2:#E5D9C8;
+  --dark:#1A1410;--mid:#5C4A3A;--soft:#9E8070;--muted:#C4B5A8;
+  --white:#FFFFFF;
+  --done:#4CAF7D;--done-bg:rgba(76,175,125,0.1);
+  --progress:#F5A623;--progress-bg:rgba(245,166,35,0.1);
+  --todo:#9E8070;--todo-bg:rgba(158,128,112,0.08);
+  --radius:16px;--radius-sm:10px;
+  --shadow:0 2px 16px rgba(26,20,16,0.08);
+}
+html,body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);font-size:14px;min-height:100vh;}
+
+/* ── HEADER ── */
+.header{
+  background:var(--dark);padding:32px 40px;
+  position:relative;overflow:hidden;
+}
+.header::before{
+  content:'';position:absolute;top:-120px;right:-80px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(232,97,74,0.2) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.header-top{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:#fff;}
+.logo span{color:var(--rose);font-style:italic;}
+.progress-global{display:flex;align-items:center;gap:16px;}
+.prog-label{font-size:0.78rem;color:rgba(255,255,255,0.5);}
+.prog-bar-wrap{width:200px;height:8px;background:rgba(255,255,255,0.1);border-radius:50px;overflow:hidden;}
+.prog-bar{height:100%;background:var(--rose);border-radius:50px;transition:width 0.5s ease;}
+.prog-pct{font-size:0.84rem;font-weight:600;color:#fff;min-width:36px;}
+.header-title{margin-top:24px;}
+.header-title h1{font-family:'Playfair Display',serif;font-size:1.8rem;color:#fff;letter-spacing:-0.02em;}
+.header-title p{font-size:0.85rem;color:rgba(255,255,255,0.45);margin-top:6px;font-weight:300;}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:24px;flex-wrap:wrap;padding:20px 40px;background:var(--sand);border-bottom:1px solid var(--sand2);}
+.leg-item{display:flex;align-items:center;gap:8px;font-size:0.78rem;color:var(--mid);}
+.leg-dot{width:10px;height:10px;border-radius:50%;}
+
+/* ── LAYOUT ── */
+.container{max-width:1100px;margin:0 auto;padding:32px 40px;}
+.phases{display:flex;flex-direction:column;gap:28px;}
+
+/* ── PHASE ── */
+.phase{background:var(--white);border-radius:var(--radius);border:1px solid rgba(237,228,214,0.6);box-shadow:var(--shadow);overflow:hidden;}
+.phase-header{
+  padding:20px 24px;display:flex;align-items:center;gap:16px;
+  cursor:pointer;user-select:none;
+  border-bottom:1px solid rgba(237,228,214,0.6);
+  transition:background 0.15s;
+}
+.phase-header:hover{background:var(--cream);}
+.phase-num{
+  width:40px;height:40px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;
+  flex-shrink:0;
+}
+.phase-info{flex:1;}
+.phase-title{font-family:'Playfair Display',serif;font-size:1rem;letter-spacing:-0.01em;}
+.phase-meta{font-size:0.72rem;color:var(--soft);margin-top:2px;}
+.phase-right{display:flex;align-items:center;gap:16px;}
+.phase-prog{text-align:right;}
+.phase-prog-num{font-size:0.84rem;font-weight:600;color:var(--dark);}
+.phase-prog-label{font-size:0.68rem;color:var(--soft);}
+.phase-mini-bar{width:80px;height:5px;background:var(--sand);border-radius:50px;overflow:hidden;margin-top:4px;}
+.phase-mini-fill{height:100%;border-radius:50px;transition:width 0.4s ease;}
+.phase-chevron{color:var(--muted);font-size:0.9rem;transition:transform 0.2s;flex-shrink:0;}
+.phase-header.open .phase-chevron{transform:rotate(180deg);}
+
+/* ── TASKS ── */
+.phase-body{padding:16px 24px 20px;display:none;}
+.phase-body.open{display:block;}
+.phase-desc{font-size:0.82rem;color:var(--soft);margin-bottom:16px;font-weight:300;line-height:1.6;padding:12px 14px;background:var(--cream);border-radius:var(--radius-sm);}
+.tasks{display:flex;flex-direction:column;gap:8px;}
+.task{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 16px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all 0.15s;
+  border:1.5px solid transparent;
+}
+.task:hover{transform:translateX(2px);}
+.task.done{background:var(--done-bg);}
+.task.progress{background:var(--progress-bg);}
+.task.todo{background:var(--todo-bg);}
+.task-check{
+  width:22px;height:22px;border-radius:6px;
+  border:2px solid var(--muted);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;flex-shrink:0;margin-top:1px;
+  transition:all 0.15s;
+}
+.task.done .task-check{background:var(--done);border-color:var(--done);color:#fff;}
+.task.progress .task-check{background:var(--progress);border-color:var(--progress);color:#fff;}
+.task-body{flex:1;}
+.task-title{font-size:0.86rem;font-weight:500;line-height:1.4;}
+.task.done .task-title{text-decoration:line-through;color:var(--soft);}
+.task-desc{font-size:0.74rem;color:var(--soft);margin-top:3px;font-weight:300;line-height:1.5;}
+.task-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+.ttag{font-size:0.62rem;font-weight:600;padding:2px 8px;border-radius:50px;text-transform:uppercase;letter-spacing:0.04em;}
+.ttag-nocode{background:rgba(74,144,217,0.12);color:#2d72b8;}
+.ttag-ia{background:rgba(232,97,74,0.1);color:var(--rose);}
+.ttag-design{background:rgba(158,128,112,0.12);color:var(--mid);}
+.ttag-negocio{background:rgba(76,175,125,0.1);color:#3a9966;}
+.ttag-config{background:rgba(245,166,35,0.1);color:#c47d0a;}
+.ttag-feito{background:rgba(76,175,125,0.15);color:#3a9966;}
+.task-effort{margin-left:auto;font-size:0.68rem;color:var(--muted);white-space:nowrap;padding-left:12px;flex-shrink:0;}
+.effort-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:3px;}
+
+/* status badges */
+.status-badge{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;flex-shrink:0;align-self:flex-start;margin-top:2px;}
+.sb-done{background:var(--done-bg);color:var(--done);}
+.sb-progress{background:var(--progress-bg);color:var(--progress);}
+.sb-todo{background:var(--todo-bg);color:var(--todo);}
+.sb-hot{background:rgba(232,97,74,0.15);color:var(--rose);}
+
+/* ── SECTION INSIDE PHASE ── */
+.task-section{margin-top:16px;margin-bottom:8px;}
+.task-section-title{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);font-weight:600;padding-left:4px;margin-bottom:6px;}
+
+/* ── SUMMARY BAR ── */
+.summary{
+  background:var(--dark);border-radius:var(--radius);padding:24px 28px;
+  margin-bottom:28px;display:flex;align-items:center;gap:32px;flex-wrap:wrap;
+  position:relative;overflow:hidden;
+}
+.summary::before{
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:180px;height:180px;
+  background:radial-gradient(circle,rgba(232,97,74,0.15) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.sum-item{text-align:center;}
+.sum-val{font-family:'Playfair Display',serif;font-size:1.8rem;color:#fff;}
+.sum-label{font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:2px;text-transform:uppercase;letter-spacing:0.06em;}
+.sum-div{width:1px;height:40px;background:rgba(255,255,255,0.1);}
+.next-action{margin-left:auto;background:var(--rose);color:#fff;padding:12px 20px;border-radius:50px;font-size:0.82rem;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.next-action:hover{background:#d04f38;transform:translateY(-1px);}
+
+/* ── TOOLS SECTION ── */
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px;}
+.tool-card{background:var(--white);border:1px solid rgba(237,228,214,0.6);border-radius:var(--radius-sm);padding:14px 16px;display:flex;align-items:flex-start;gap:12px;box-shadow:var(--shadow);}
+.tool-icon{font-size:1.4rem;flex-shrink:0;}
+.tool-name{font-size:0.84rem;font-weight:600;}
+.tool-role{font-size:0.72rem;color:var(--soft);margin-top:2px;}
+.tool-cost{font-size:0.7rem;font-weight:600;color:var(--done);margin-top:4px;}
+
+/* ── RESPONSIVE — MOBILE FIRST ── */
+@media(max-width:640px){
+  .header{padding:20px 16px;}
+  .container{padding:16px;}
+  .legend{padding:14px 16px;gap:12px;}
+  .leg-item{font-size:0.72rem;}
+
+  /* Header top: stack logo + progress */
+  .header-top{flex-direction:column;align-items:flex-start;gap:10px;}
+  .progress-global{width:100%;}
+  .prog-bar-wrap{flex:1;}
+  .prog-label{font-size:0.7rem;}
+  .header-title h1{font-size:1.3rem;}
+  .header-title p{font-size:0.76rem;}
+
+  /* Summary: scroll horizontally */
+  .summary{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    flex-wrap:nowrap;
+    gap:20px;
+    padding:18px 20px;
+  }
+  .sum-div{display:none;}
+  .sum-item{flex-shrink:0;}
+  .sum-val{font-size:1.4rem;}
+  .next-action{
+    width:100%;text-align:center;
+    flex-shrink:0;padding:10px 16px;font-size:0.8rem;
+  }
+
+  /* Phase headers */
+  .phase-header{padding:14px 16px;gap:10px;}
+  .phase-num{width:34px;height:34px;font-size:0.9rem;border-radius:10px;}
+  .phase-title{font-size:0.9rem;}
+  .phase-meta{font-size:0.65rem;}
+  .phase-prog-num{font-size:0.78rem;}
+  .phase-prog-label{font-size:0.62rem;}
+  .phase-mini-bar{width:60px;}
+
+  /* Tasks */
+  .phase-body{padding:12px 16px 16px;}
+  .phase-desc{font-size:0.78rem;padding:10px 12px;}
+  .task{padding:12px 14px;gap:10px;}
+  .task-check{width:20px;height:20px;border-radius:5px;font-size:0.7rem;flex-shrink:0;}
+  .task-title{font-size:0.82rem;}
+  .task-desc{font-size:0.7rem;}
+  .task-effort{display:none;}
+  .status-badge{font-size:0.6rem;padding:2px 6px;}
+  .ttag{font-size:0.58rem;padding:2px 6px;}
+
+  /* Tools grid */
+  .tools-grid{grid-template-columns:1fr;}
+  .tool-card{padding:12px;}
+  .tool-name{font-size:0.8rem;}
+  .tool-role{font-size:0.68rem;}
+  .tool-cost{font-size:0.66rem;}
+}
+
+@media(max-width:400px){
+  .header{padding:16px 12px;}
+  .container{padding:12px;}
+  .phase-right{display:none;}
+  .task{gap:8px;}
+  .phase-header{gap:8px;}
+}
+</style>
+
+<!-- ═══ SUPABASE CONFIG ═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://xxxjoaccaxxonzdfpgjj.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGpvYWNjYXh4b256ZGZwZ2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjkzMDksImV4cCI6MjA5MTk0NTMwOX0.Gv9tYOH5REGE2XYjl-bcliJDMugsOe3L8tP7pQd1hkA';
+  const SALAO_DEMO_ID = 'a1b2c3d4-0000-0000-0000-000000000001';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<!-- ════════════════════════════════════════════════════════════════ -->
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">Vem se <span>Cuidar</span></div>
+    <div class="progress-global">
+      <span class="prog-label">Progresso geral</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" id="globalBar" style="width:18%;"></div></div>
+      <span class="prog-pct" id="globalPct">18%</span>
+    </div>
+  </div>
+  <div class="header-title">
+    <h1>Roadmap completo do produto</h1>
+    <p>Tudo que falta criar, configurar e lançar — etapa por etapa</p>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="leg-item"><div class="leg-dot" style="background:var(--done);"></div> Concluído</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--progress);"></div> Em andamento</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--todo);"></div> A fazer</div>
+  <div class="leg-item"><div class="leg-dot" style="background:var(--rose);"></div> Próxima prioridade</div>
+</div>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <div class="sum-item"><div class="sum-val" id="sumDone">4</div><div class="sum-label">concluídos</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-val" id="sumProgress">2</div><div class="sum-label">em andamento</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-val" id="sumTodo">18</div><div class="sum-label">a fazer</div></div>
+    <div class="sum-div"></div>
+    <div class="sum-item"><div class="sum-val">6</div><div class="sum-label">fases</div></div>
+    <button class="next-action" onclick="scrollToNext()">→ Ir para próxima tarefa</button>
+  </div>
+
+  <div class="phases">
+
+  <!-- ══ FASE 1 ══ -->
+  <div class="phase" data-phase="1">
+    <div class="phase-header open" onclick="togglePhase(this)">
+      <div class="phase-num" style="background:var(--done);">1</div>
+      <div class="phase-info">
+        <div class="phase-title">Design & Protótipo</div>
+        <div class="phase-meta">Interface visual do produto · Landing page + App logado</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-prog">
+          <div class="phase-prog-num">2 / 4</div>
+          <div class="phase-prog-label">tarefas</div>
+          <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:50%;background:var(--done);"></div></div>
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body open">
+      <div class="phase-desc">O protótipo visual já foi criado. Agora é preciso refinar as telas que ainda estão incompletas e garantir que o produto tenha consistência visual antes de mostrar para os primeiros clientes beta.</div>
+      <div class="tasks">
+
+        <div class="task done" onclick="toggleTask(this)">
+          <div class="task-check">✓</div>
+          <div class="task-body">
+            <div class="task-title">Landing page (Vem se Cuidar)</div>
+            <div class="task-desc">Hero, funcionalidades, preços, formulário de captura de leads beta</div>
+            <div class="task-tags"><span class="ttag ttag-feito">✓ feito</span><span class="ttag ttag-design">Design</span></div>
+          </div>
+          <span class="status-badge sb-done">Concluído</span>
+        </div>
+
+        <div class="task done" onclick="toggleTask(this)">
+          <div class="task-check">✓</div>
+          <div class="task-body">
+            <div class="task-title">App logado — estrutura principal (7 módulos)</div>
+            <div class="task-desc">Dashboard, Agenda, Clientes, Financeiro, Profissionais, Agente IA, Configurações</div>
+            <div class="task-tags"><span class="ttag ttag-feito">✓ feito</span><span class="ttag ttag-design">Design</span></div>
+          </div>
+          <span class="status-badge sb-done">Concluído</span>
+        </div>
+
+        <div class="task todo next-task" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Tela de perfil completo da cliente 🔥</div>
+            <div class="task-desc">Histórico de serviços, galeria de fotos dos trabalhos, preferências, anotações da profissional e linha do tempo de visitas</div>
+            <div class="task-tags"><span class="ttag ttag-design">Design</span><span class="ttag ttag-ia">Diferencial IA</span></div>
+          </div>
+          <span class="status-badge sb-hot">Próxima</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Tela de agendamento pelo lado da cliente (público)</div>
+            <div class="task-desc">Página que a cliente acessa para escolher serviço, profissional e horário — sem precisar de login</div>
+            <div class="task-tags"><span class="ttag ttag-design">Design</span><span class="ttag ttag-negocio">Core</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FASE 2 ══ -->
+  <div class="phase" data-phase="2">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num" style="background:var(--rose);">2</div>
+      <div class="phase-info">
+        <div class="phase-title">Infraestrutura & Backend (No-code)</div>
+        <div class="phase-meta">Banco de dados, autenticação e lógica do sistema</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-prog">
+          <div class="phase-prog-num">0 / 6</div>
+          <div class="phase-prog-label">tarefas</div>
+          <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:0%;background:var(--rose);"></div></div>
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">Esta é a fase mais técnica. Aqui o protótipo vira um sistema real com dados persistentes. Usando ferramentas no-code você consegue fazer tudo isso sem programar — mas precisa de dedicação e paciência para configurar.</div>
+
+      <div class="task-section"><div class="task-section-title">Banco de dados</div></div>
+      <div class="tasks">
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Criar banco de dados no Supabase</div>
+            <div class="task-desc">Criar tabelas: salões, profissionais, clientes, agendamentos, serviços, transações. Supabase é gratuito para começar.</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span><span class="ttag ttag-config">Config</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Sistema de autenticação (login/senha)</div>
+            <div class="task-desc">Usar Supabase Auth — já vem junto. Configurar login por e-mail + senha para a dona do salão</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span><span class="ttag ttag-config">Config</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+      </div>
+
+      <div class="task-section"><div class="task-section-title">Lógica & automações</div></div>
+      <div class="tasks">
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Conectar front-end ao banco via n8n ou Bubble</div>
+            <div class="task-desc">Escolher entre Bubble (mais visual, tudo em um) ou Softr/Glide (conecta ao Supabase). Recomendado: Bubble para MVP completo</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Lógica de agendamento (verificar disponibilidade)</div>
+            <div class="task-desc">Regra que impede dois agendamentos no mesmo horário para o mesmo profissional. Bloquear horários de almoço e folga.</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span><span class="ttag ttag-negocio">Core</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Cálculo automático de comissões</div>
+            <div class="task-desc">Quando um serviço é concluído, calcular automaticamente o valor para o salão e para o profissional conforme a % configurada</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span><span class="ttag ttag-negocio">Financeiro</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Lógica de detecção de clientes inativas</div>
+            <div class="task-desc">Todo dia às 8h, verificar quais clientes não aparecem há mais de X dias e colocar na fila de reativação da IA</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span><span class="ttag ttag-ia">IA</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FASE 3 ══ -->
+  <div class="phase" data-phase="3">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num" style="background:var(--rose);">3</div>
+      <div class="phase-info">
+        <div class="phase-title">Agente IA — WhatsApp</div>
+        <div class="phase-meta">O diferencial do produto · Configuração do agente conversacional</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-prog">
+          <div class="phase-prog-num">0 / 5</div>
+          <div class="phase-prog-label">tarefas</div>
+          <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:0%;background:var(--rose);"></div></div>
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">Este é o coração do produto — o que diferencia o Vem se Cuidar de todos os concorrentes. Usar Evolution API (gratuita) para conectar o WhatsApp, Typebot para os fluxos de conversa e Claude API para as respostas inteligentes.</div>
+      <div class="tasks">
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Configurar Evolution API (conexão WhatsApp)</div>
+            <div class="task-desc">Instalar Evolution API no Railway ou Render (gratuito). Conectar o número de WhatsApp do salão via QR Code. Sem custo de API oficial.</div>
+            <div class="task-tags"><span class="ttag ttag-config">Config</span><span class="ttag ttag-ia">IA</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Criar fluxo de agendamento no Typebot</div>
+            <div class="task-desc">Fluxo conversacional: saudação → serviço desejado → profissional → datas disponíveis → confirmação → registro no banco. Typebot é gratuito.</div>
+            <div class="task-tags"><span class="ttag ttag-nocode">No-code</span><span class="ttag ttag-ia">IA</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Integrar Claude API para respostas livres</div>
+            <div class="task-desc">Para perguntas fora do fluxo ("quanto custa?", "tem vaga amanhã?"), conectar a Claude API via n8n para responder naturalmente com contexto do salão</div>
+            <div class="task-tags"><span class="ttag ttag-ia">IA</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Criar fluxo de reativação automática</div>
+            <div class="task-desc">Mensagem carinhosa e personalizada para cliente que sumiu. Ex: "Oi Fernanda! 🌸 Faz um tempinho que não te vemos por aqui. Que tal um cuidado especial essa semana?"</div>
+            <div class="task-tags"><span class="ttag ttag-ia">IA</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Criar fluxo de lembretes e confirmação</div>
+            <div class="task-desc">24h antes: lembrete com data/hora/profissional. Cliente responde SIM ou CANCELA. Se cancelar: libera horário e oferece para lista de espera.</div>
+            <div class="task-tags"><span class="ttag ttag-ia">IA</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FASE 4 ══ -->
+  <div class="phase" data-phase="4">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num" style="background:var(--progress);">4</div>
+      <div class="phase-info">
+        <div class="phase-title">Pagamentos & Assinatura</div>
+        <div class="phase-meta">Modelo de receita recorrente · Cobrança mensal dos salões</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-prog">
+          <div class="phase-prog-num">0 / 4</div>
+          <div class="phase-prog-label">tarefas</div>
+          <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:0%;background:var(--progress);"></div></div>
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">Para monetizar, você precisa cobrar os salões mensalmente. Stripe (internacional) ou Mercado Pago (Brasil) são as melhores opções. O Stripe tem o melhor sistema de assinaturas recorrentes.</div>
+      <div class="tasks">
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Criar conta Stripe ou Mercado Pago</div>
+            <div class="task-desc">Mercado Pago é mais fácil de aprovar no Brasil e aceita Pix. Stripe tem melhor gestão de assinaturas. Recomendado: Stripe para escalabilidade.</div>
+            <div class="task-tags"><span class="ttag ttag-negocio">Negócio</span><span class="ttag ttag-config">Config</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Criar os 3 planos de assinatura</div>
+            <div class="task-desc">Solo (R$67/mês), Studio (R$147/mês), Salão (R$297/mês). Configurar limites por plano: nº de profissionais, acesso ao agente IA, etc.</div>
+            <div class="task-tags"><span class="ttag ttag-negocio">Negócio</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Página de checkout e onboarding pós-pagamento</div>
+            <div class="task-desc">Após assinar, cliente vai para tela de cadastro do salão: nome, profissionais, serviços e horários. Fluxo guiado em 5 passos.</div>
+            <div class="task-tags"><span class="ttag ttag-design">Design</span><span class="ttag ttag-negocio">Core</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Lógica de trial gratuito (10 dias)</div>
+            <div class="task-desc">Salão cria conta e usa grátis por 10 dias. Ao final, recebe e-mail automático para assinar. Se não assinar, acesso bloqueado mas dados salvos.</div>
+            <div class="task-tags"><span class="ttag ttag-negocio">Negócio</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FASE 5 ══ -->
+  <div class="phase" data-phase="5">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num" style="background:var(--progress);">5</div>
+      <div class="phase-info">
+        <div class="phase-title">Lançamento Beta & Aquisição</div>
+        <div class="phase-meta">Captar os primeiros 10 clientes pagantes</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-prog">
+          <div class="phase-prog-num">2 / 5</div>
+          <div class="phase-prog-label">tarefas</div>
+          <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:40%;background:var(--progress);"></div></div>
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">Antes de ter tudo perfeito, valide com clientes reais. 3 salões usando o produto já provam que a ideia funciona. O beta gratuito é a isca — mas o objetivo é converter em pagantes rapidamente.</div>
+      <div class="tasks">
+
+        <div class="task done" onclick="toggleTask(this)">
+          <div class="task-check">✓</div>
+          <div class="task-body">
+            <div class="task-title">Landing page para captura de leads beta</div>
+            <div class="task-desc">Formulário com nome do salão, WhatsApp e e-mail. Já criado!</div>
+            <div class="task-tags"><span class="ttag ttag-feito">✓ feito</span></div>
+          </div>
+          <span class="status-badge sb-done">Concluído</span>
+        </div>
+
+        <div class="task done" onclick="toggleTask(this)">
+          <div class="task-check">✓</div>
+          <div class="task-body">
+            <div class="task-title">Protótipo do app para mostrar para leads</div>
+            <div class="task-desc">App completo com 7 módulos para apresentar e convencer os primeiros clientes. Já criado!</div>
+            <div class="task-tags"><span class="ttag ttag-feito">✓ feito</span></div>
+          </div>
+          <span class="status-badge sb-done">Concluído</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Publicar a landing page online</div>
+            <div class="task-desc">Usar Netlify Drop (grátis, 30 segundos). Conectar um domínio barato: vemsecuidar.com.br (~R$40/ano no Registro.br)</div>
+            <div class="task-tags"><span class="ttag ttag-config">Config</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Script de abordagem para captar os primeiros salões</div>
+            <div class="task-desc">Mensagem no WhatsApp/Instagram para donas de salão. Abordar 30 salões para conseguir 5 interessadas em testar grátis.</div>
+            <div class="task-tags"><span class="ttag ttag-negocio">Negócio</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Processo de onboarding manual (beta)</div>
+            <div class="task-desc">Durante o beta, você mesmo configura o sistema para cada salão parceiro por videochamada. Isso garante sucesso e gera depoimentos valiosos.</div>
+            <div class="task-tags"><span class="ttag ttag-negocio">Negócio</span></div>
+          </div>
+          <span class="status-badge sb-todo">A fazer</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FASE 6 ══ -->
+  <div class="phase" data-phase="6">
+    <div class="phase-header" onclick="togglePhase(this)">
+      <div class="phase-num" style="background:var(--soft);">6</div>
+      <div class="phase-info">
+        <div class="phase-title">Escala & Melhorias (pós-lançamento)</div>
+        <div class="phase-meta">Após os primeiros 10 clientes pagantes</div>
+      </div>
+      <div class="phase-right">
+        <div class="phase-prog">
+          <div class="phase-prog-num">0 / 5</div>
+          <div class="phase-prog-label">tarefas</div>
+          <div class="phase-mini-bar"><div class="phase-mini-fill" style="width:0%;background:var(--soft);"></div></div>
+        </div>
+        <div class="phase-chevron">▼</div>
+      </div>
+    </div>
+    <div class="phase-body">
+      <div class="phase-desc">Com receita entrando, você pode reinvestir em melhorar o produto. Estas features são para depois do MVP validado — não tente fazer tudo de uma vez.</div>
+      <div class="tasks">
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Agendamento direto pelo Instagram Direct</div>
+            <div class="task-desc">Cliente manda "quero agendar" no Direct e o agente IA responde e agenda — integração via ManyChat + n8n</div>
+            <div class="task-tags"><span class="ttag ttag-ia">IA</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">Fase 2</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Sugestão de serviço inteligente por IA</div>
+            <div class="task-desc">"Fernanda faz hidratação há 3 meses. Sugerir cronograma capilar." IA analisa histórico e propõe o próximo serviço ideal.</div>
+            <div class="task-tags"><span class="ttag ttag-ia">IA</span></div>
+          </div>
+          <span class="status-badge sb-todo">Fase 2</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">App mobile (PWA)</div>
+            <div class="task-desc">Transformar o sistema em Progressive Web App para que a dona do salão adicione no celular como se fosse um app nativo — sem publicar na App Store</div>
+            <div class="task-tags"><span class="ttag ttag-design">Design</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">Fase 2</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Programa de indicação (referral)</div>
+            <div class="task-desc">Cliente indica outro salão e ganha 1 mês grátis. Sistema rastreia automaticamente quem indicou quem.</div>
+            <div class="task-tags"><span class="ttag ttag-negocio">Negócio</span></div>
+          </div>
+          <span class="status-badge sb-todo">Fase 2</span>
+        </div>
+
+        <div class="task todo" onclick="toggleTask(this)">
+          <div class="task-check"></div>
+          <div class="task-body">
+            <div class="task-title">Relatório mensal automático por e-mail</div>
+            <div class="task-desc">Todo dia 1º do mês, dona do salão recebe PDF bonito com: faturamento, clientes novas, serviços mais vendidos, profissional destaque</div>
+            <div class="task-tags"><span class="ttag ttag-ia">IA</span><span class="ttag ttag-nocode">No-code</span></div>
+          </div>
+          <span class="status-badge sb-todo">Fase 2</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /phases -->
+
+  <!-- FERRAMENTAS -->
+  <div style="margin-top:36px;">
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:6px;">🧰 Ferramentas recomendadas</div>
+    <div style="font-size:0.8rem;color:var(--soft);margin-bottom:16px;">Stack 100% no-code · Custo estimado: R$0 – R$400/mês</div>
+    <div class="tools-grid">
+      <div class="tool-card"><div class="tool-icon">🗄️</div><div><div class="tool-name">Supabase</div><div class="tool-role">Banco de dados + autenticação</div><div class="tool-cost">Grátis para começar</div></div></div>
+      <div class="tool-card"><div class="tool-icon">🔗</div><div><div class="tool-name">n8n</div><div class="tool-role">Automações e integrações</div><div class="tool-cost">Grátis (self-hosted) ou ~R$100/mês</div></div></div>
+      <div class="tool-card"><div class="tool-icon">💬</div><div><div class="tool-name">Typebot</div><div class="tool-role">Fluxos de conversa WhatsApp</div><div class="tool-cost">Grátis até 300 respostas/mês</div></div></div>
+      <div class="tool-card"><div class="tool-icon">📱</div><div><div class="tool-name">Evolution API</div><div class="tool-role">Conexão com WhatsApp</div><div class="tool-cost">Grátis (open source)</div></div></div>
+      <div class="tool-card"><div class="tool-icon">🤖</div><div><div class="tool-name">Claude API</div><div class="tool-role">IA conversacional do agente</div><div class="tool-cost">~R$0,05 por conversa</div></div></div>
+      <div class="tool-card"><div class="tool-icon">💳</div><div><div class="tool-name">Stripe</div><div class="tool-role">Assinaturas e cobranças</div><div class="tool-cost">1,5% + R$0,50 por transação</div></div></div>
+      <div class="tool-card"><div class="tool-icon">🌐</div><div><div class="tool-name">Netlify</div><div class="tool-role">Publicar a landing page</div><div class="tool-cost">Grátis</div></div></div>
+      <div class="tool-card"><div class="tool-icon">📦</div><div><div class="tool-name">Bubble.io</div><div class="tool-role">App no-code (alternativa ao Supabase)</div><div class="tool-cost">Grátis / US$29/mês</div></div></div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+function togglePhase(header) {
+  header.classList.toggle('open');
+  const body = header.nextElementSibling;
+  body.classList.toggle('open');
+}
+
+function toggleTask(task) {
+  if (task.classList.contains('done')) return; // já concluído, não desfaz
+  if (task.classList.contains('todo')) {
+    task.classList.remove('todo');
+    task.classList.add('done');
+    task.querySelector('.task-check').textContent = '✓';
+    const badge = task.querySelector('.status-badge');
+    if (badge) { badge.className = 'status-badge sb-done'; badge.textContent = 'Concluído'; }
+    updateProgress();
+  }
+}
+
+function updateProgress() {
+  const allTasks = document.querySelectorAll('.task');
+  const doneTasks = document.querySelectorAll('.task.done');
+  const progressTasks = document.querySelectorAll('.task.progress');
+  const pct = Math.round((doneTasks.length / allTasks.length) * 100);
+
+  document.getElementById('globalBar').style.width = pct + '%';
+  document.getElementById('globalPct').textContent = pct + '%';
+  document.getElementById('sumDone').textContent = doneTasks.length;
+  document.getElementById('sumProgress').textContent = progressTasks.length;
+  document.getElementById('sumTodo').textContent = allTasks.length - doneTasks.length - progressTasks.length;
+
+  // Update phase bars
+  document.querySelectorAll('.phase').forEach(phase => {
+    const total = phase.querySelectorAll('.task').length;
+    const done = phase.querySelectorAll('.task.done').length;
+    const fill = phase.querySelector('.phase-mini-fill');
+    const num = phase.querySelector('.phase-prog-num');
+    if (fill) fill.style.width = (total > 0 ? Math.round((done/total)*100) : 0) + '%';
+    if (num) num.textContent = done + ' / ' + total;
+  });
+}
+
+function scrollToNext() {
+  const next = document.querySelector('.task.todo');
+  if (next) {
+    // Open the phase if closed
+    const body = next.closest('.phase-body');
+    if (body && !body.classList.contains('open')) {
+      body.classList.add('open');
+      body.previousElementSibling.classList.add('open');
+    }
+    next.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    next.style.outline = '2px solid var(--rose)';
+    setTimeout(() => next.style.outline = '', 2000);
+  }
+}
+
+// Init
+updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vem se Cuidar — Minha Agenda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rose:#E8614A;--rose-lt:#F2977F;--rose-bg:rgba(232,97,74,0.08);
+  --cream:#FAF6F0;--sand:#EDE4D6;--sand2:#E5D9C8;
+  --dark:#1A1410;--mid:#5C4A3A;--soft:#9E8070;--muted:#C4B5A8;
+  --white:#FFFFFF;--done:#4CAF7D;--done-bg:rgba(76,175,125,0.1);
+  --warning:#F5A623;--info:#4A90D9;
+  --radius:18px;--radius-sm:12px;
+}
+html,body{
+  font-family:'DM Sans',sans-serif;background:var(--dark);
+  color:var(--dark);min-height:100%;
+  /* Mobile-first: dark header looks like an app */
+}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;outline:none;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:50px;}
+
+/* ── APP HEADER ── */
+.app-header{
+  background:var(--dark);
+  padding:env(safe-area-inset-top,16px) 20px 0;
+  position:relative;overflow:hidden;
+}
+.app-header::before{
+  content:'';position:absolute;top:-60px;right:-60px;
+  width:220px;height:220px;
+  background:radial-gradient(circle,rgba(232,97,74,0.18) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.header-top{
+  padding:16px 0 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:1;
+}
+.prof-greeting{display:flex;align-items:center;gap:12px;}
+.prof-avatar{
+  width:44px;height:44px;border-radius:14px;
+  background:var(--info);color:#fff;
+  font-family:'Playfair Display',serif;font-size:1.2rem;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.greeting-text{color:rgba(255,255,255,0.5);font-size:0.76rem;}
+.prof-name-h{font-weight:600;font-size:0.95rem;color:#fff;margin-top:1px;}
+.header-icons{display:flex;gap:8px;}
+.h-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);
+  display:flex;align-items:center;justify-content:center;font-size:0.95rem;
+  cursor:pointer;transition:background 0.15s;position:relative;
+}
+.h-icon:hover{background:rgba(255,255,255,0.14);}
+.h-badge{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--rose);border-radius:50%;border:2px solid var(--dark);}
+
+/* ── DAY STATS ── */
+.day-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:10px;padding:0 0 20px;
+  position:relative;z-index:1;
+}
+.ds-item{
+  background:rgba(255,255,255,0.06);border-radius:var(--radius-sm);
+  padding:12px 14px;
+}
+.ds-val{font-family:'Playfair Display',serif;font-size:1.4rem;color:#fff;}
+.ds-label{font-size:0.66rem;color:rgba(255,255,255,0.35);margin-top:3px;text-transform:uppercase;letter-spacing:0.05em;}
+.ds-change{font-size:0.66rem;margin-top:4px;}
+.ds-up{color:rgba(76,175,125,0.8);}
+
+/* ── DAY SELECTOR ── */
+.day-selector{
+  display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  padding:0 20px 0;padding-bottom:1px;
+  position:relative;z-index:1;
+}
+.day-selector::-webkit-scrollbar{display:none;}
+.day-pill{
+  flex-shrink:0;display:flex;flex-direction:column;align-items:center;
+  padding:8px 14px;border-radius:50px;cursor:pointer;
+  transition:all 0.15s;-webkit-tap-highlight-color:transparent;
+}
+.day-pill .dp-week{font-size:0.62rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.05em;}
+.day-pill .dp-num{font-size:1rem;font-weight:600;color:rgba(255,255,255,0.6);margin-top:2px;line-height:1;}
+.day-pill.today .dp-num{color:var(--rose);}
+.day-pill.selected{background:var(--rose);}
+.day-pill.selected .dp-week,.day-pill.selected .dp-num{color:#fff;}
+.day-pill .dp-dot{width:4px;height:4px;border-radius:50%;background:transparent;margin-top:3px;}
+.day-pill.has-appt .dp-dot{background:rgba(255,255,255,0.3);}
+.day-pill.selected .dp-dot{background:rgba(255,255,255,0.6);}
+
+/* ── BODY ── */
+.app-body{
+  background:var(--cream);
+  border-radius:24px 24px 0 0;
+  min-height:calc(100vh - 200px);
+  padding:24px 20px 100px;
+  margin-top:16px;
+}
+
+/* ── SECTIONS ── */
+.section{display:none;}
+.section.active{display:block;animation:fadeUp 0.2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── TODAY AGENDA ── */
+.agenda-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.agenda-date{font-family:'Playfair Display',serif;font-size:1.2rem;letter-spacing:-0.01em;}
+.agenda-count{font-size:0.76rem;color:var(--soft);}
+
+.time-list{display:flex;flex-direction:column;position:relative;}
+.time-line{
+  display:flex;gap:12px;
+  padding:6px 0;
+  position:relative;
+}
+.time-label{
+  width:40px;flex-shrink:0;font-size:0.72rem;
+  color:var(--muted);text-align:right;padding-top:14px;
+}
+.time-slot-col{flex:1;position:relative;}
+
+/* Appointment card on timeline */
+.appt-block{
+  background:var(--white);border-radius:var(--radius-sm);
+  padding:12px 14px;border-left:3px solid var(--rose);
+  margin-bottom:6px;cursor:pointer;transition:all 0.15s;
+  box-shadow:0 2px 8px rgba(26,20,16,0.06);
+  -webkit-tap-highlight-color:transparent;
+}
+.appt-block:hover{transform:translateX(2px);}
+.appt-block.done{border-left-color:var(--done);opacity:0.7;}
+.appt-block.next{border-left-color:var(--rose);background:rgba(232,97,74,0.03);}
+.appt-block.gap{border-left-color:transparent;background:var(--cream);box-shadow:none;}
+
+.appt-time{font-size:0.7rem;font-weight:600;color:var(--soft);margin-bottom:4px;}
+.appt-client{font-weight:600;font-size:0.9rem;}
+.appt-service{font-size:0.76rem;color:var(--soft);margin-top:2px;}
+.appt-row{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.appt-price{font-size:0.82rem;font-weight:700;color:var(--dark);}
+.appt-status-badge{font-size:0.66rem;font-weight:700;padding:3px 10px;border-radius:50px;}
+.status-done{background:var(--done-bg);color:var(--done);}
+.status-next{background:var(--rose-bg);color:var(--rose);}
+.status-wait{background:rgba(158,128,112,0.1);color:var(--soft);}
+
+/* Empty slot -->*/
+.empty-slot{
+  padding:12px 14px;border-radius:var(--radius-sm);
+  border:1.5px dashed rgba(237,228,214,0.8);
+  text-align:center;font-size:0.76rem;color:var(--muted);
+  margin-bottom:6px;cursor:pointer;transition:all 0.15s;
+}
+.empty-slot:hover{border-color:var(--rose);color:var(--rose);}
+
+/* ── COMISSÕES ── */
+.comiss-header{
+  background:linear-gradient(135deg,var(--dark),#2d1f17);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+}
+.comiss-header::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(232,97,74,0.2) 0%,transparent 70%);border-radius:50%;}
+.comiss-label{font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;position:relative;z-index:1;}
+.comiss-val{font-family:'Playfair Display',serif;font-size:2.4rem;color:#fff;position:relative;z-index:1;}
+.comiss-sub{font-size:0.76rem;color:rgba(255,255,255,0.4);margin-top:4px;position:relative;z-index:1;}
+.comiss-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px;position:relative;z-index:1;}
+.cr-item{background:rgba(255,255,255,0.06);border-radius:10px;padding:10px;text-align:center;}
+.cr-val{font-weight:700;font-size:0.9rem;color:#fff;}
+.cr-label{font-size:0.62rem;color:rgba(255,255,255,0.35);margin-top:2px;}
+
+.card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(237,228,214,0.6);padding:16px;margin-bottom:14px;box-shadow:0 2px 10px rgba(26,20,16,0.06);}
+.card-title{font-weight:600;font-size:0.88rem;margin-bottom:12px;}
+
+.servico-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(237,228,214,0.4);}
+.servico-row:last-child{border-bottom:none;}
+.sr-name{font-size:0.84rem;font-weight:500;}
+.sr-count{font-size:0.72rem;color:var(--soft);}
+.sr-val{font-weight:600;font-size:0.84rem;color:var(--done);}
+
+.tx-mini{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(237,228,214,0.3);}
+.tx-mini:last-child{border-bottom:none;}
+.tx-mini-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;}
+.tx-mini-desc{flex:1;font-size:0.82rem;font-weight:500;}
+.tx-mini-sub{font-size:0.7rem;color:var(--soft);}
+.tx-mini-val{font-weight:600;font-size:0.86rem;color:var(--done);}
+
+/* ── CLIENTES ── */
+.search-mini{
+  display:flex;align-items:center;gap:8px;
+  background:var(--white);border:1.5px solid rgba(237,228,214,0.8);
+  border-radius:50px;padding:10px 16px;margin-bottom:14px;
+}
+.search-mini input{flex:1;border:none;background:none;font-size:0.86rem;color:var(--dark);font-family:'DM Sans',sans-serif;}
+.search-mini input::placeholder{color:var(--muted);}
+.search-mini input:focus{outline:none;}
+
+.mini-client-card{
+  background:var(--white);border-radius:var(--radius-sm);
+  border:1px solid rgba(237,228,214,0.6);padding:14px;
+  display:flex;align-items:center;gap:12px;margin-bottom:8px;
+  cursor:pointer;transition:all 0.15s;
+}
+.mini-client-card:hover{border-color:var(--rose);}
+.mcc-avatar{width:40px;height:40px;border-radius:50%;color:#fff;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.mcc-name{font-weight:600;font-size:0.86rem;}
+.mcc-last{font-size:0.72rem;color:var(--soft);margin-top:2px;}
+.mcc-tag{font-size:0.64rem;font-weight:700;padding:2px 8px;border-radius:50px;margin-left:auto;}
+
+/* ── PERFIL ── */
+.perfil-header{text-align:center;padding:24px 0 16px;}
+.perfil-avatar{width:72px;height:72px;border-radius:20px;margin:0 auto 12px;background:var(--info);color:#fff;font-family:'Playfair Display',serif;font-size:1.8rem;display:flex;align-items:center;justify-content:center;}
+.perfil-name{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:4px;}
+.perfil-role{font-size:0.78rem;color:var(--soft);}
+.perfil-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0;}
+.ps-item{background:var(--white);border-radius:var(--radius-sm);border:1px solid rgba(237,228,214,0.6);padding:12px;text-align:center;}
+.ps-val{font-family:'Playfair Display',serif;font-size:1.2rem;}
+.ps-label{font-size:0.62rem;color:var(--soft);margin-top:2px;}
+
+.toggle{width:44px;height:24px;background:var(--sand2);border-radius:50px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle.on{background:var(--rose);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.15);}
+.toggle.on::after{transform:translateX(20px);}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(237,228,214,0.4);}
+.setting-row:last-child{border-bottom:none;}
+.sr-info-name{font-size:0.84rem;font-weight:500;}
+.sr-info-desc{font-size:0.72rem;color:var(--soft);margin-top:2px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  height:60px;background:var(--white);
+  border-top:1px solid rgba(237,228,214,0.8);
+  display:flex;z-index:100;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bn-item{
+  flex:1;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:2px;
+  cursor:pointer;color:var(--muted);font-size:0.56rem;font-weight:500;
+  transition:color 0.15s;position:relative;
+  -webkit-tap-highlight-color:transparent;
+}
+.bn-item.active{color:var(--rose);}
+.bn-icon{font-size:1.2rem;line-height:1;}
+.bn-badge{position:absolute;top:6px;right:calc(50% - 16px);width:7px;height:7px;background:var(--rose);border-radius:50%;border:2px solid var(--white);}
+
+/* ── DESKTOP ENHANCEMENTS ── */
+@media(min-width:600px){
+  .app-body{border-radius:24px;margin:16px;min-height:auto;}
+  .day-selector{padding:0 20px 4px;}
+  .app-header{padding-top:20px;}
+  body{background:var(--sand);}
+}
+</style>
+
+<!-- ═══ SUPABASE CONFIG ═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://xxxjoaccaxxonzdfpgjj.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGpvYWNjYXh4b256ZGZwZ2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjkzMDksImV4cCI6MjA5MTk0NTMwOX0.Gv9tYOH5REGE2XYjl-bcliJDMugsOe3L8tP7pQd1hkA';
+  const SALAO_DEMO_ID = 'a1b2c3d4-0000-0000-0000-000000000001';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<!-- ════════════════════════════════════════════════════════════════ -->
+</head>
+<body>
+
+<!-- APP HEADER -->
+<div class="app-header">
+  <div class="header-top">
+    <div class="prof-greeting">
+      <div class="prof-avatar">B</div>
+      <div>
+        <div class="greeting-text">Bom dia! ☀️</div>
+        <div class="prof-name-h">Beatriz Santos</div>
+      </div>
+    </div>
+    <div class="header-icons">
+      <div class="h-icon" onclick="switchSection('notifs')">🔔<div class="h-badge"></div></div>
+      <div class="h-icon" onclick="switchSection('perfil')">⚙️</div>
+    </div>
+  </div>
+
+  <!-- Day stats -->
+  <div class="day-stats">
+    <div class="ds-item">
+      <div class="ds-val">4</div>
+      <div class="ds-label">Hoje</div>
+      <div class="ds-change ds-up">↑ +1</div>
+    </div>
+    <div class="ds-item">
+      <div class="ds-val">R$320</div>
+      <div class="ds-label">Ganhos hoje</div>
+      <div class="ds-change ds-up">↑ +R$80</div>
+    </div>
+    <div class="ds-item">
+      <div class="ds-val">R$1.890</div>
+      <div class="ds-label">Este mês</div>
+      <div class="ds-change ds-up">↑ +22%</div>
+    </div>
+  </div>
+
+  <!-- Day selector -->
+  <div class="day-selector">
+    <div class="day-pill" onclick="selectDay(this)"><div class="dp-week">Dom</div><div class="dp-num">13</div><div class="dp-dot"></div></div>
+    <div class="day-pill today selected has-appt" onclick="selectDay(this)"><div class="dp-week">Seg</div><div class="dp-num">14</div><div class="dp-dot"></div></div>
+    <div class="day-pill has-appt" onclick="selectDay(this)"><div class="dp-week">Ter</div><div class="dp-num">15</div><div class="dp-dot"></div></div>
+    <div class="day-pill has-appt" onclick="selectDay(this)"><div class="dp-week">Qua</div><div class="dp-num">16</div><div class="dp-dot"></div></div>
+    <div class="day-pill has-appt" onclick="selectDay(this)"><div class="dp-week">Qui</div><div class="dp-num">17</div><div class="dp-dot"></div></div>
+    <div class="day-pill has-appt" onclick="selectDay(this)"><div class="dp-week">Sex</div><div class="dp-num">18</div><div class="dp-dot"></div></div>
+    <div class="day-pill has-appt" onclick="selectDay(this)"><div class="dp-week">Sáb</div><div class="dp-num">19</div><div class="dp-dot"></div></div>
+  </div>
+</div>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- ── AGENDA ── -->
+  <div class="section active" id="sec-agenda">
+    <div class="agenda-header">
+      <div>
+        <div class="agenda-date">Segunda, 14 abr</div>
+        <div class="agenda-count">4 atendimentos · R$320 estimado</div>
+      </div>
+      <button style="background:var(--rose);color:#fff;padding:8px 14px;border-radius:50px;font-size:0.76rem;font-weight:600;" onclick="alert('Modal: Bloquear horário')">+ Bloquear horário</button>
+    </div>
+
+    <div class="time-list">
+      <div class="time-line">
+        <div class="time-label">09:00</div>
+        <div class="time-slot-col">
+          <div class="appt-block done">
+            <div class="appt-time">09:00 — 09:45</div>
+            <div class="appt-client">Juliana Costa</div>
+            <div class="appt-service">Manicure completa</div>
+            <div class="appt-row">
+              <div class="appt-price">R$45</div>
+              <span class="appt-status-badge status-done">✓ Concluído</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="time-line">
+        <div class="time-label">10:00</div>
+        <div class="time-slot-col">
+          <div class="appt-block done">
+            <div class="appt-time">10:00 — 11:30</div>
+            <div class="appt-client">Roberta Silva</div>
+            <div class="appt-service">Manicure + Pedicure</div>
+            <div class="appt-row">
+              <div class="appt-price">R$80</div>
+              <span class="appt-status-badge status-done">✓ Concluído</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="time-line">
+        <div class="time-label">11:30</div>
+        <div class="time-slot-col">
+          <div class="empty-slot" onclick="alert('Agendar horário livre')">+ Horário livre — clique para agendar</div>
+        </div>
+      </div>
+
+      <div class="time-line">
+        <div class="time-label">14:00</div>
+        <div class="time-slot-col">
+          <div class="appt-block next">
+            <div class="appt-time">14:00 — 14:45 · Em andamento</div>
+            <div class="appt-client">Fernanda Lima</div>
+            <div class="appt-service">Manicure gel nude</div>
+            <div class="appt-row">
+              <div class="appt-price">R$55</div>
+              <span class="appt-status-badge status-next">● Em andamento</span>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button style="flex:1;padding:8px;background:var(--done-bg);color:var(--done);border-radius:8px;font-size:0.76rem;font-weight:600;" onclick="alert('Atendimento concluído! ✓')">✓ Concluir</button>
+              <button style="padding:8px 12px;background:var(--cream);color:var(--mid);border-radius:8px;font-size:0.76rem;" onclick="alert('Abrindo perfil da cliente')">Ver perfil</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="time-line">
+        <div class="time-label">15:30</div>
+        <div class="time-slot-col">
+          <div class="appt-block">
+            <div class="appt-time">15:30 — 16:15</div>
+            <div class="appt-client">Amanda Freitas</div>
+            <div class="appt-service">Manicure simples</div>
+            <div class="appt-row">
+              <div class="appt-price">R$45</div>
+              <span class="appt-status-badge status-wait">Aguardando</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="time-line">
+        <div class="time-label">16:30</div>
+        <div class="time-slot-col">
+          <div class="empty-slot" onclick="alert('Agendar horário livre')">+ Horário livre — clique para agendar</div>
+        </div>
+      </div>
+
+      <div class="time-line">
+        <div class="time-label">17:00</div>
+        <div class="time-slot-col">
+          <div class="empty-slot" onclick="alert('Agendar horário livre')">+ Horário livre — clique para agendar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMISSÕES ── -->
+  <div class="section" id="sec-comissao">
+    <div class="comiss-header">
+      <div class="comiss-label">Minha comissão — Abril 2025</div>
+      <div class="comiss-val">R$1.890</div>
+      <div class="comiss-sub">18 atendimentos · 35% de comissão</div>
+      <div class="comiss-row">
+        <div class="cr-item"><div class="cr-val">18</div><div class="cr-label">Atendimentos</div></div>
+        <div class="cr-item"><div class="cr-val">R$105</div><div class="cr-label">Ticket médio</div></div>
+        <div class="cr-item"><div class="cr-val">★4.9</div><div class="cr-label">Avaliação</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Por serviço</div>
+      <div class="servico-row">
+        <div><div class="sr-name">💅 Manicure</div><div class="sr-count">10 atendimentos</div></div>
+        <div class="sr-val">R$875</div>
+      </div>
+      <div class="servico-row">
+        <div><div class="sr-name">🦶 Pedicure</div><div class="sr-count">5 atendimentos</div></div>
+        <div class="sr-val">R$525</div>
+      </div>
+      <div class="servico-row">
+        <div><div class="sr-name">💅 Manicure + Pedicure</div><div class="sr-count">3 atendimentos</div></div>
+        <div class="sr-val">R$490</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Últimos pagamentos</div>
+      <div class="tx-mini">
+        <div class="tx-mini-icon" style="background:var(--done-bg);">💵</div>
+        <div style="flex:1;"><div class="tx-mini-desc">Pagamento quinzenal</div><div class="tx-mini-sub">01/04/2025 · Pix</div></div>
+        <div class="tx-mini-val">R$945</div>
+      </div>
+      <div class="tx-mini">
+        <div class="tx-mini-icon" style="background:var(--done-bg);">💵</div>
+        <div style="flex:1;"><div class="tx-mini-desc">Pagamento quinzenal</div><div class="tx-mini-sub">15/03/2025 · Pix</div></div>
+        <div class="tx-mini-val">R$880</div>
+      </div>
+      <div class="tx-mini">
+        <div class="tx-mini-icon" style="background:var(--done-bg);">💵</div>
+        <div style="flex:1;"><div class="tx-mini-desc">Pagamento quinzenal</div><div class="tx-mini-sub">01/03/2025 · Pix</div></div>
+        <div class="tx-mini-val">R$810</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(76,175,125,0.08);border-radius:var(--radius-sm);padding:14px;font-size:0.78rem;color:#3a9966;line-height:1.5;">
+      📅 Próximo pagamento: <strong>01/05/2025</strong> · Estimativa: <strong>R$945</strong>
+    </div>
+  </div>
+
+  <!-- ── CLIENTES ── -->
+  <div class="section" id="sec-clientes">
+    <div class="search-mini">
+      <span>🔍</span>
+      <input type="text" placeholder="Buscar cliente...">
+    </div>
+
+    <div style="font-size:0.76rem;color:var(--soft);margin-bottom:10px;font-weight:500;">MINHAS CLIENTES (18)</div>
+
+    <div class="mini-client-card">
+      <div class="mcc-avatar" style="background:var(--rose);">F</div>
+      <div style="flex:1;"><div class="mcc-name">Fernanda Lima</div><div class="mcc-last">Hoje às 14h · Manicure gel</div></div>
+      <span class="mcc-tag" style="background:rgba(245,166,35,0.1);color:#c47d0a;">VIP</span>
+    </div>
+    <div class="mini-client-card">
+      <div class="mcc-avatar" style="background:#4A90D9;">J</div>
+      <div style="flex:1;"><div class="mcc-name">Juliana Costa</div><div class="mcc-last">Hoje 09h · Manicure</div></div>
+      <span class="mcc-tag" style="background:var(--done-bg);color:var(--done);">Regular</span>
+    </div>
+    <div class="mini-client-card">
+      <div class="mcc-avatar" style="background:#F5A623;">R</div>
+      <div style="flex:1;"><div class="mcc-name">Roberta Silva</div><div class="mcc-last">Hoje 10h · Manicure + Pedicure</div></div>
+      <span class="mcc-tag" style="background:var(--done-bg);color:var(--done);">Regular</span>
+    </div>
+    <div class="mini-client-card">
+      <div class="mcc-avatar" style="background:#4CAF7D;">A</div>
+      <div style="flex:1;"><div class="mcc-name">Amanda Freitas</div><div class="mcc-last">Hoje 15h30 · Manicure</div></div>
+      <span class="mcc-tag" style="background:rgba(74,144,217,0.1);color:#2d72b8;">Nova</span>
+    </div>
+    <div class="mini-client-card">
+      <div class="mcc-avatar" style="background:#9E8070;">P</div>
+      <div style="flex:1;"><div class="mcc-name">Patrícia Gomes</div><div class="mcc-last">Últ. visita: 08 abr · Pedicure</div></div>
+      <span class="mcc-tag" style="background:var(--rose-bg);color:var(--rose);">Freq.</span>
+    </div>
+    <div class="mini-client-card">
+      <div class="mcc-avatar" style="background:var(--rose);">L</div>
+      <div style="flex:1;"><div class="mcc-name">Larissa Mendes</div><div class="mcc-last">Sexta 18/04 · Manicure gel</div></div>
+      <span class="mcc-tag" style="background:var(--done-bg);color:var(--done);">Regular</span>
+    </div>
+  </div>
+
+  <!-- ── NOTIFICAÇÕES ── -->
+  <div class="section" id="sec-notifs">
+    <div style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:16px;">Notificações</div>
+    <div class="card" style="border-left:3px solid var(--rose);">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--rose-bg);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">📅</div>
+        <div>
+          <div style="font-weight:600;font-size:0.84rem;">Novo agendamento confirmado</div>
+          <div style="font-size:0.76rem;color:var(--soft);margin-top:3px;line-height:1.5;">Amanda Freitas agendou Manicure para hoje às 15h30. Agendado pelo agente IA.</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:6px;">Há 1 hora</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--done);">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--done-bg);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">💰</div>
+        <div>
+          <div style="font-weight:600;font-size:0.84rem;">Pagamento em 2 semanas</div>
+          <div style="font-size:0.76rem;color:var(--soft);margin-top:3px;line-height:1.5;">Seu próximo pagamento de comissão está previsto para 01/05. Estimativa: R$945.</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:6px;">Ontem</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--info);opacity:0.6;">
+      <div style="display:flex;gap:10px;align-items:flex-start;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(74,144,217,0.1);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;">⭐</div>
+        <div>
+          <div style="font-weight:600;font-size:0.84rem;">Nova avaliação recebida</div>
+          <div style="font-size:0.76rem;color:var(--soft);margin-top:3px;line-height:1.5;">Juliana Costa deixou uma avaliação 5 estrelas: "Bia é incrível!"</div>
+          <div style="font-size:0.68rem;color:var(--muted);margin-top:6px;">2 dias atrás</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PERFIL ── -->
+  <div class="section" id="sec-perfil">
+    <div class="perfil-header">
+      <div class="perfil-avatar">B</div>
+      <div class="perfil-name">Beatriz Santos</div>
+      <div class="perfil-role">Manicure · Autônoma · Salão da Carol</div>
+    </div>
+    <div class="perfil-stats">
+      <div class="ps-item"><div class="ps-val">18</div><div class="ps-label">Este mês</div></div>
+      <div class="ps-item"><div class="ps-val">★4.9</div><div class="ps-label">Avaliação</div></div>
+      <div class="ps-item"><div class="ps-val">2 anos</div><div class="ps-label">No salão</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Configurações</div>
+      <div class="setting-row">
+        <div><div class="sr-info-name">Lembretes de agendamento</div><div class="sr-info-desc">Notificação 30min antes de cada atendimento</div></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="setting-row">
+        <div><div class="sr-info-name">Novos agendamentos</div><div class="sr-info-desc">Aviso quando nova cliente agendar comigo</div></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+      <div class="setting-row">
+        <div><div class="sr-info-name">Cancelamentos</div><div class="sr-info-desc">Alerta quando cliente cancelar</div></div>
+        <div class="toggle on" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px;">Meus dias de trabalho</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div style="padding:7px 16px;border-radius:50px;background:var(--rose);color:#fff;font-size:0.78rem;font-weight:600;">Ter</div>
+        <div style="padding:7px 16px;border-radius:50px;background:var(--rose);color:#fff;font-size:0.78rem;font-weight:600;">Qua</div>
+        <div style="padding:7px 16px;border-radius:50px;background:var(--rose);color:#fff;font-size:0.78rem;font-weight:600;">Qui</div>
+        <div style="padding:7px 16px;border-radius:50px;background:var(--rose);color:#fff;font-size:0.78rem;font-weight:600;">Sex</div>
+        <div style="padding:7px 16px;border-radius:50px;background:var(--rose);color:#fff;font-size:0.78rem;font-weight:600;">Sáb</div>
+        <div style="padding:7px 16px;border-radius:50px;background:var(--sand);color:var(--mid);font-size:0.78rem;">Seg</div>
+        <div style="padding:7px 16px;border-radius:50px;background:var(--sand);color:var(--mid);font-size:0.78rem;">Dom</div>
+      </div>
+    </div>
+
+    <button style="width:100%;padding:13px;background:transparent;border:1.5px solid rgba(232,97,74,0.3);color:var(--rose);border-radius:50px;font-size:0.84rem;font-weight:500;" onclick="window.location.href='06-login-cadastro.html'">Sair da conta</button>
+  </div>
+
+</div><!-- /app-body -->
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bn-item active" id="bn-agenda" onclick="switchSection('agenda');setBn(this)">
+    <span class="bn-icon">📅</span><span>Agenda</span>
+  </div>
+  <div class="bn-item" id="bn-comissao" onclick="switchSection('comissao');setBn(this)">
+    <span class="bn-icon">💰</span><span>Comissões</span>
+  </div>
+  <div class="bn-item" id="bn-clientes" onclick="switchSection('clientes');setBn(this)">
+    <span class="bn-icon">👩</span><span>Clientes</span>
+  </div>
+  <div class="bn-item" id="bn-notifs" onclick="switchSection('notifs');setBn(this)">
+    <span class="bn-icon">🔔</span><span>Avisos</span>
+    <span class="bn-badge"></span>
+  </div>
+  <div class="bn-item" id="bn-perfil" onclick="switchSection('perfil');setBn(this)">
+    <span class="bn-icon">👤</span><span>Perfil</span>
+  </div>
+</nav>
+
+<script>
+function switchSection(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('sec-' + name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function setBn(el) {
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectDay(el) {
+  document.querySelectorAll('.day-pill').forEach(d => d.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vem se Cuidar — Perfil da Cliente</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rose:#E8614A;--rose-lt:#F2977F;--rose-bg:rgba(232,97,74,0.08);
+  --cream:#FAF6F0;--sand:#EDE4D6;--sand2:#E5D9C8;
+  --dark:#1A1410;--mid:#5C4A3A;--soft:#9E8070;--muted:#C4B5A8;
+  --white:#FFFFFF;
+  --done:#4CAF7D;--done-bg:rgba(76,175,125,0.1);
+  --warning:#F5A623;--info:#4A90D9;
+  --radius:18px;--radius-sm:10px;--radius-xs:6px;
+  --shadow:0 2px 16px rgba(26,20,16,0.07);
+  --shadow-md:0 6px 28px rgba(26,20,16,0.12);
+}
+html,body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);font-size:14px;min-height:100vh;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;outline:none;}
+input,textarea,select{font-family:'DM Sans',sans-serif;outline:none;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-thumb{background:var(--sand2);border-radius:50px;}
+
+/* ── TOPBAR ── */
+.topbar{
+  background:var(--white);border-bottom:1px solid rgba(237,228,214,0.8);
+  padding:14px 32px;display:flex;align-items:center;gap:16px;
+  position:sticky;top:0;z-index:20;
+}
+.back-btn{display:flex;align-items:center;gap:6px;color:var(--mid);font-size:0.82rem;font-weight:500;cursor:pointer;padding:6px 12px;border-radius:50px;transition:background 0.15s;}
+.back-btn:hover{background:var(--cream);}
+.topbar-logo{font-family:'Playfair Display',serif;font-size:1rem;color:var(--dark);}
+.topbar-logo span{color:var(--rose);font-style:italic;}
+.topbar-actions{margin-left:auto;display:flex;gap:10px;}
+.btn{padding:9px 18px;border-radius:50px;font-size:0.82rem;font-weight:500;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;border:none;}
+.btn-primary{background:var(--rose);color:#fff;}
+.btn-primary:hover{background:#d04f38;box-shadow:0 4px 16px rgba(232,97,74,0.3);}
+.btn-ghost{background:transparent;color:var(--mid);border:1.5px solid rgba(92,74,58,0.2);}
+.btn-ghost:hover{border-color:var(--rose);color:var(--rose);}
+.btn-wpp{background:rgba(76,175,125,0.1);color:#3a9966;border:none;}
+.btn-wpp:hover{background:rgba(76,175,125,0.2);}
+.btn-sm{padding:7px 14px;font-size:0.76rem;}
+
+/* ── LAYOUT ── */
+.page{max-width:1080px;margin:0 auto;padding:28px 32px;}
+.grid-main{display:grid;grid-template-columns:1fr 320px;gap:20px;align-items:start;}
+
+/* ── HERO CARD ── */
+.hero-card{
+  background:var(--white);border-radius:var(--radius);
+  border:1px solid rgba(237,228,214,0.6);box-shadow:var(--shadow);
+  overflow:hidden;margin-bottom:20px;
+}
+.hero-banner{
+  height:100px;
+  background:linear-gradient(135deg,#E8614A 0%,#F2977F 50%,#EDE4D6 100%);
+  position:relative;
+}
+.hero-banner-pattern{
+  position:absolute;inset:0;
+  background-image:radial-gradient(circle at 20% 50%,rgba(255,255,255,0.15) 0%,transparent 50%),
+                   radial-gradient(circle at 80% 20%,rgba(255,255,255,0.1) 0%,transparent 40%);
+}
+.hero-body{padding:0 24px 24px;}
+.hero-avatar-wrap{position:relative;display:inline-block;margin-top:-36px;margin-bottom:12px;}
+.hero-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--rose);color:#fff;
+  font-family:'Playfair Display',serif;font-size:1.8rem;
+  display:flex;align-items:center;justify-content:center;
+  border:4px solid var(--white);box-shadow:var(--shadow-md);
+}
+.hero-online{position:absolute;bottom:4px;right:4px;width:14px;height:14px;background:var(--done);border-radius:50%;border:2px solid var(--white);}
+.hero-top-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.hero-name-block{}
+.hero-name{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:-0.02em;}
+.hero-sub{font-size:0.78rem;color:var(--soft);margin-top:3px;font-weight:300;}
+.hero-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+.tag{font-size:0.66rem;font-weight:700;padding:4px 10px;border-radius:50px;letter-spacing:0.03em;}
+.tag-vip{background:rgba(245,166,35,0.12);color:#c47d0a;}
+.tag-regular{background:rgba(76,175,125,0.1);color:#3a9966;}
+.tag-fiel{background:rgba(74,144,217,0.1);color:#2d72b8;}
+
+/* stat strip */
+.stat-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:20px;border-top:1px solid rgba(237,228,214,0.6);}
+.strip-item{text-align:center;padding:16px 8px;}
+.strip-item+.strip-item{border-left:1px solid rgba(237,228,214,0.6);}
+.strip-val{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--dark);}
+.strip-label{font-size:0.68rem;color:var(--soft);margin-top:3px;font-weight:300;}
+
+/* ── NEXT APPT ── */
+.next-appt{
+  background:linear-gradient(135deg,var(--dark) 0%,#2d1f17 100%);
+  border-radius:var(--radius);padding:20px 22px;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:20px;position:relative;overflow:hidden;
+}
+.next-appt::before{
+  content:'';position:absolute;right:-30px;top:-30px;
+  width:120px;height:120px;
+  background:radial-gradient(circle,rgba(232,97,74,0.2) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.na-icon{width:44px;height:44px;border-radius:12px;background:rgba(232,97,74,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.na-body{flex:1;}
+.na-label{font-size:0.68rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;}
+.na-info{font-size:0.9rem;font-weight:500;color:#fff;margin-top:4px;}
+.na-sub{font-size:0.75rem;color:rgba(255,255,255,0.5);margin-top:2px;}
+.na-actions{display:flex;gap:8px;flex-shrink:0;}
+.na-btn{padding:7px 14px;border-radius:50px;font-size:0.72rem;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.na-btn-confirm{background:var(--rose);color:#fff;}
+.na-btn-cancel{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6);}
+.na-btn-cancel:hover{background:rgba(255,255,255,0.14);}
+
+/* ── SECTION CARD ── */
+.card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(237,228,214,0.6);box-shadow:var(--shadow);margin-bottom:20px;overflow:hidden;}
+.card-header{padding:18px 22px 0;display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-weight:600;font-size:0.92rem;}
+.card-action{font-size:0.76rem;color:var(--rose);font-weight:500;cursor:pointer;}
+.card-body{padding:16px 22px 20px;}
+
+/* ── TIMELINE ── */
+.timeline{display:flex;flex-direction:column;gap:0;position:relative;}
+.timeline::before{content:'';position:absolute;left:19px;top:24px;bottom:24px;width:2px;background:var(--sand);z-index:0;}
+.tl-item{display:flex;gap:16px;padding:12px 0;position:relative;cursor:pointer;}
+.tl-item:hover .tl-content{background:var(--cream);}
+.tl-dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;border:3px solid var(--white);box-shadow:0 0 0 2px var(--sand);position:relative;z-index:1;background:var(--white);}
+.tl-content{flex:1;background:var(--cream);border-radius:var(--radius-sm);padding:12px 14px;transition:background 0.15s;}
+.tl-header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
+.tl-service{font-weight:600;font-size:0.86rem;}
+.tl-value{font-weight:600;font-size:0.86rem;color:var(--done);white-space:nowrap;}
+.tl-meta{font-size:0.72rem;color:var(--soft);margin-top:3px;}
+.tl-prof{display:inline-flex;align-items:center;gap:4px;background:var(--white);padding:2px 8px;border-radius:50px;font-size:0.68rem;margin-top:6px;}
+.tl-prof-dot{width:6px;height:6px;border-radius:50%;}
+.tl-note{font-size:0.74rem;color:var(--mid);margin-top:8px;font-style:italic;padding-top:8px;border-top:1px solid rgba(237,228,214,0.6);line-height:1.5;}
+.tl-photo-strip{display:flex;gap:6px;margin-top:8px;}
+.tl-photo{width:48px;height:48px;border-radius:8px;object-fit:cover;cursor:pointer;transition:transform 0.15s;border:2px solid var(--white);box-shadow:var(--shadow);}
+.tl-photo:hover{transform:scale(1.08);}
+.tl-photo-placeholder{width:48px;height:48px;border-radius:8px;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:1rem;cursor:pointer;transition:background 0.15s;}
+.tl-photo-placeholder:hover{background:var(--sand2);}
+.tl-date-badge{font-size:0.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;padding:16px 0 4px;grid-column:1/-1;}
+
+/* ── GALERIA ── */
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 22px 20px;}
+.gallery-item{aspect-ratio:1;border-radius:var(--radius-sm);overflow:hidden;cursor:pointer;position:relative;background:var(--sand);}
+.gallery-item:hover .gallery-overlay{opacity:1;}
+.gallery-bg{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:transform 0.2s;}
+.gallery-item:hover .gallery-bg{transform:scale(1.05);}
+.gallery-overlay{position:absolute;inset:0;background:rgba(26,20,16,0.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;}
+.gallery-label{position:absolute;bottom:0;left:0;right:0;padding:6px 8px;background:linear-gradient(transparent,rgba(26,20,16,0.6));font-size:0.62rem;color:#fff;font-weight:500;}
+.gallery-add{border:2px dashed var(--sand2);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--muted);font-size:0.68rem;transition:all 0.15s;}
+.gallery-add:hover{border-color:var(--rose);color:var(--rose);background:var(--rose-bg);}
+.gallery-add-icon{font-size:1.4rem;}
+
+/* ── PREFERÊNCIAS ── */
+.pref-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pref-item{background:var(--cream);border-radius:var(--radius-sm);padding:14px;}
+.pref-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:600;margin-bottom:6px;}
+.pref-val{font-size:0.84rem;color:var(--dark);line-height:1.5;}
+.pref-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
+.pref-chip{font-size:0.7rem;padding:4px 10px;border-radius:50px;background:var(--white);color:var(--mid);border:1px solid rgba(237,228,214,0.8);}
+.pref-chip.like{background:rgba(76,175,125,0.08);color:#3a9966;border-color:rgba(76,175,125,0.2);}
+.pref-chip.dislike{background:rgba(232,97,74,0.08);color:var(--rose);border-color:rgba(232,97,74,0.2);}
+.pref-chip.allergy{background:rgba(245,166,35,0.1);color:#c47d0a;border-color:rgba(245,166,35,0.2);}
+
+/* nota livre */
+.nota-area{width:100%;background:var(--cream);border:1.5px solid rgba(237,228,214,0.8);border-radius:var(--radius-sm);padding:12px 14px;font-size:0.84rem;color:var(--dark);resize:vertical;min-height:80px;line-height:1.6;transition:border-color 0.15s;}
+.nota-area:focus{border-color:var(--rose);}
+
+/* ── SIDEBAR CARDS ── */
+.s-card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(237,228,214,0.6);box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+.s-card-header{padding:16px 18px 0;display:flex;align-items:center;justify-content:space-between;}
+.s-card-title{font-weight:600;font-size:0.86rem;}
+.s-card-body{padding:14px 18px 18px;}
+
+/* info list */
+.info-list{display:flex;flex-direction:column;gap:10px;}
+.info-item{display:flex;align-items:flex-start;gap:10px;}
+.info-icon{font-size:0.9rem;width:20px;text-align:center;flex-shrink:0;margin-top:1px;}
+.info-label{font-size:0.7rem;color:var(--muted);display:block;margin-bottom:1px;}
+.info-val{font-size:0.84rem;color:var(--dark);font-weight:500;}
+
+/* ia suggestions */
+.ia-list{display:flex;flex-direction:column;gap:8px;}
+.ia-item{background:var(--rose-bg);border-radius:var(--radius-sm);padding:12px 14px;border-left:3px solid var(--rose);}
+.ia-item-title{font-size:0.8rem;font-weight:500;color:var(--dark);}
+.ia-item-desc{font-size:0.72rem;color:var(--soft);margin-top:3px;font-weight:300;line-height:1.5;}
+.ia-item-btn{margin-top:8px;font-size:0.7rem;font-weight:600;color:var(--rose);cursor:pointer;display:inline-flex;align-items:center;gap:4px;}
+
+/* rating stars */
+.stars{display:flex;gap:3px;color:var(--warning);}
+.rating-val{font-size:0.78rem;color:var(--soft);margin-left:4px;}
+
+/* quick actions */
+.quick-actions{display:flex;flex-direction:column;gap:8px;}
+.qa-btn{width:100%;padding:11px 14px;border-radius:var(--radius-sm);font-size:0.84rem;font-weight:500;display:flex;align-items:center;gap:10px;transition:all 0.15s;cursor:pointer;}
+.qa-wpp{background:rgba(76,175,125,0.1);color:#3a9966;}
+.qa-wpp:hover{background:rgba(76,175,125,0.18);}
+.qa-agenda{background:var(--rose-bg);color:var(--rose);}
+.qa-agenda:hover{background:rgba(232,97,74,0.14);}
+.qa-reativacao{background:rgba(245,166,35,0.1);color:#c47d0a;}
+.qa-reativacao:hover{background:rgba(245,166,35,0.18);}
+.qa-avaliacao{background:rgba(74,144,217,0.08);color:#2d72b8;}
+.qa-avaliacao:hover{background:rgba(74,144,217,0.15);}
+
+/* mini chart */
+.freq-chart{display:flex;align-items:flex-end;gap:4px;height:48px;margin-top:12px;}
+.freq-bar{flex:1;border-radius:4px 4px 0 0;background:var(--rose);opacity:0.3;transition:opacity 0.15s;min-height:4px;}
+.freq-bar.active{opacity:1;}
+.freq-bar:hover{opacity:0.8;}
+.freq-months{display:flex;gap:4px;margin-top:4px;}
+.freq-month{flex:1;font-size:0.55rem;text-align:center;color:var(--muted);}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:1px solid rgba(237,228,214,0.8);padding:0 22px;}
+.tab{padding:12px 16px;font-size:0.82rem;font-weight:500;color:var(--soft);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;}
+.tab:hover{color:var(--dark);}
+.tab.active{color:var(--rose);border-bottom-color:var(--rose);}
+
+/* ── MODAL FOTO ── */
+.photo-modal{position:fixed;inset:0;background:rgba(26,20,16,0.85);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.photo-modal.show{display:flex;}
+.photo-modal-inner{background:var(--white);border-radius:20px;padding:24px;max-width:480px;width:90vw;box-shadow:0 24px 60px rgba(26,20,16,0.3);animation:popIn 0.2s ease;}
+@keyframes popIn{from{opacity:0;transform:scale(0.92);}to{opacity:1;transform:scale(1);}}
+.photo-modal-img{width:100%;aspect-ratio:1;border-radius:var(--radius-sm);background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:4rem;margin-bottom:14px;}
+.photo-modal-meta{font-size:0.78rem;color:var(--soft);}
+.photo-modal-close{position:absolute;top:20px;right:20px;width:36px;height:36px;background:rgba(26,20,16,0.6);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;}
+
+/* ── ANIMS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.hero-card,.next-appt,.card,.s-card{animation:fadeUp 0.35s ease both;}
+
+/* ── RESPONSIVE — MOBILE FIRST ── */
+@media(max-width:860px){
+  .grid-main{grid-template-columns:1fr;}
+  .stat-strip{grid-template-columns:repeat(2,1fr);}
+  .gallery-grid{grid-template-columns:repeat(3,1fr);}
+  .page{padding:16px;}
+  .topbar{padding:12px 16px;gap:8px;}
+
+  /* Hide some topbar buttons, show just key ones */
+  .topbar .btn-ghost{display:none;}
+  .topbar-logo{font-size:0.9rem;}
+
+  /* Next appt: stack on mobile */
+  .next-appt{flex-wrap:wrap;gap:12px;padding:16px;}
+  .na-actions{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .na-btn{text-align:center;padding:10px;}
+
+  /* Hero */
+  .hero-banner{height:72px;}
+  .hero-avatar{width:60px;height:60px;font-size:1.4rem;}
+  .hero-avatar-wrap{margin-top:-28px;}
+  .hero-top-row{flex-direction:column;align-items:flex-start;gap:10px;}
+  .hero-name{font-size:1.2rem;}
+  .hero-tags{flex-wrap:wrap;}
+
+  /* Tabs: scroll horizontal */
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;gap:0;padding:0 16px;}
+  .tab{white-space:nowrap;padding:10px 14px;font-size:0.78rem;flex-shrink:0;}
+
+  /* Card body */
+  .card-body{padding:14px 16px 16px;}
+  .card-header{padding:14px 16px 0;}
+
+  /* Timeline */
+  .timeline::before{left:15px;}
+  .tl-dot{width:30px;height:30px;font-size:0.75rem;}
+  .tl-content{padding:10px 12px;}
+
+  /* Gallery */
+  .gallery-grid{padding:0 16px 16px;}
+
+  /* Prefs */
+  .pref-grid{grid-template-columns:1fr;}
+
+  /* Sidebar cards come after main content */
+  .grid-main .s-card{margin-bottom:14px;}
+
+  /* Quick actions: 2 columns */
+  .quick-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .qa-btn{justify-content:flex-start;}
+
+  /* Info list */
+  .info-list{gap:8px;}
+}
+
+@media(max-width:480px){
+  .na-actions{grid-template-columns:1fr 1fr;}
+  .gallery-grid{grid-template-columns:repeat(2,1fr);}
+  .stat-strip{grid-template-columns:repeat(2,1fr);}
+  .strip-val{font-size:1.1rem;}
+  .strip-label{font-size:0.6rem;}
+  .page{padding:12px;}
+  .topbar{padding:10px 12px;}
+  .topbar-logo{display:none;}
+  .topbar-actions .btn-sm{padding:7px 12px;font-size:0.72rem;}
+  .quick-actions{grid-template-columns:1fr;}
+  .hero-top-row .stars{font-size:0.75rem;}
+}
+</style>
+
+<!-- ═══ SUPABASE CONFIG ═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://xxxjoaccaxxonzdfpgjj.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGpvYWNjYXh4b256ZGZwZ2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjkzMDksImV4cCI6MjA5MTk0NTMwOX0.Gv9tYOH5REGE2XYjl-bcliJDMugsOe3L8tP7pQd1hkA';
+  const SALAO_DEMO_ID = 'a1b2c3d4-0000-0000-0000-000000000001';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<!-- ════════════════════════════════════════════════════════════════ -->
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="back-btn" onclick="history.back()">← Clientes</div>
+  <div class="topbar-logo">Vem se <span>Cuidar</span></div>
+  <div class="topbar-actions">
+    <button class="btn btn-wpp btn-sm">💬 WhatsApp</button>
+    <button class="btn btn-ghost btn-sm">✏️ Editar</button>
+    <button class="btn btn-primary btn-sm" onclick="openAgenda()">📅 Agendar</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- PRÓXIMO AGENDAMENTO -->
+  <div class="next-appt" style="animation-delay:0.05s;">
+    <div class="na-icon">📅</div>
+    <div class="na-body">
+      <div class="na-label">Próximo agendamento</div>
+      <div class="na-info">Escova + Hidratação · Carol</div>
+      <div class="na-sub">Sexta-feira, 18 de abril · 14h00 · ~2h de duração</div>
+    </div>
+    <div class="na-actions">
+      <button class="na-btn na-btn-confirm">✓ Confirmar</button>
+      <button class="na-btn na-btn-cancel">Cancelar</button>
+    </div>
+  </div>
+
+  <div class="grid-main">
+
+    <!-- ── COLUNA PRINCIPAL ── -->
+    <div>
+
+      <!-- HERO -->
+      <div class="hero-card">
+        <div class="hero-banner"><div class="hero-banner-pattern"></div></div>
+        <div class="hero-body">
+          <div class="hero-top-row">
+            <div>
+              <div class="hero-avatar-wrap">
+                <div class="hero-avatar">F</div>
+                <div class="hero-online"></div>
+              </div>
+              <div class="hero-name">Fernanda Lima</div>
+              <div class="hero-sub">📍 Setor Bueno · Goiânia, GO &nbsp;·&nbsp; 🎂 Aniversário em 23 dias</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+              <div class="stars">⭐⭐⭐⭐⭐ <span class="rating-val">5.0 (28 aval.)</span></div>
+              <div class="hero-tags">
+                <span class="tag tag-vip">⭐ VIP</span>
+                <span class="tag tag-regular">✓ Fidelíssima</span>
+                <span class="tag tag-fiel">💅 2 anos de casa</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-strip">
+          <div class="strip-item">
+            <div class="strip-val">28</div>
+            <div class="strip-label">visitas</div>
+          </div>
+          <div class="strip-item">
+            <div class="strip-val">R$186</div>
+            <div class="strip-label">ticket médio</div>
+          </div>
+          <div class="strip-item">
+            <div class="strip-val">R$5.208</div>
+            <div class="strip-label">total gasto</div>
+          </div>
+          <div class="strip-item">
+            <div class="strip-val">25 dias</div>
+            <div class="strip-label">freq. média</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HISTÓRICO + GALERIA (tabs) -->
+      <div class="card">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab(this,'timeline')">📋 Histórico de Visitas</div>
+          <div class="tab" onclick="switchTab(this,'gallery')">📸 Galeria de Trabalhos</div>
+          <div class="tab" onclick="switchTab(this,'prefs')">💛 Preferências</div>
+        </div>
+
+        <!-- TAB: TIMELINE -->
+        <div id="tab-timeline" class="card-body">
+          <div class="timeline">
+
+            <!-- Hoje -->
+            <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;padding:4px 0 8px;">Abril 2025</div>
+
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(76,175,125,0.1);">✅</div>
+              <div class="tl-content">
+                <div class="tl-header">
+                  <div>
+                    <div class="tl-service">Escova Progressiva + Hidratação</div>
+                    <div class="tl-meta">Hoje, 14 abr · 14h00 — 16h30</div>
+                  </div>
+                  <div class="tl-value">R$280</div>
+                </div>
+                <div class="tl-prof"><div class="tl-prof-dot" style="background:var(--rose);"></div> Carol</div>
+                <div class="tl-note">💬 Cliente veio com queixa de frizz. Aplicei progressiva leve + btox capilar. Ficou perfeita! Pedir pra ela mandar foto depois.</div>
+                <div class="tl-photo-strip">
+                  <div class="tl-photo-placeholder" onclick="openPhoto('✨','Escova Progressiva','14/04/2025')">📷 +foto</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;padding:12px 0 8px;">Março 2025</div>
+
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(74,144,217,0.1);">💅</div>
+              <div class="tl-content">
+                <div class="tl-header">
+                  <div>
+                    <div class="tl-service">Manicure + Pedicure Completa</div>
+                    <div class="tl-meta">18 mar · 10h00 — 11h30</div>
+                  </div>
+                  <div class="tl-value">R$95</div>
+                </div>
+                <div class="tl-prof"><div class="tl-prof-dot" style="background:var(--info);"></div> Bia</div>
+                <div class="tl-note">💬 Pediu gel na cor nude rosé. Adorou o resultado. Disse que vai voltar semana que vem pra escova.</div>
+                <div class="tl-photo-strip">
+                  <div class="tl-photo-placeholder" style="background:rgba(74,144,217,0.1);" onclick="openPhoto('💅','Manicure Gel','18/03/2025')">💅</div>
+                  <div class="tl-photo-placeholder" style="background:rgba(74,144,217,0.1);" onclick="openPhoto('🦶','Pedicure','18/03/2025')">🦶</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(232,97,74,0.1);">✂️</div>
+              <div class="tl-content">
+                <div class="tl-header">
+                  <div>
+                    <div class="tl-service">Corte + Escova</div>
+                    <div class="tl-meta">05 mar · 09h00 — 10h30</div>
+                  </div>
+                  <div class="tl-value">R$150</div>
+                </div>
+                <div class="tl-prof"><div class="tl-prof-dot" style="background:var(--rose);"></div> Carol</div>
+                <div class="tl-note">💬 Cortei uns 5cm, desbastei as pontas. Escova com babyliss. Cliente saiu super satisfeita.</div>
+                <div class="tl-photo-strip">
+                  <div class="tl-photo-placeholder" onclick="openPhoto('✂️','Corte + Escova','05/03/2025')">✂️</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="font-size:0.68rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;padding:12px 0 8px;">Fevereiro 2025</div>
+
+            <div class="tl-item">
+              <div class="tl-dot" style="background:rgba(245,166,35,0.1);">🎨</div>
+              <div class="tl-content">
+                <div class="tl-header">
+                  <div>
+                    <div class="tl-service">Coloração completa — Mel Dourado</div>
+                    <div class="tl-meta">20 fev · 13h00 — 16h00</div>
+                  </div>
+                  <div class="tl-value">R$380</div>
+                </div>
+                <div class="tl-prof"><div class="tl-prof-dot" style="background:var(--rose);"></div> Carol</div>
+                <div class="tl-note">💬 Usamos tintura sem amônia (preferência dela). Loiro mel com reflexos dourados. Ficou LINDA. Ela foi de bruna pra loira — grande mudança!</div>
+                <div class="tl-photo-strip">
+                  <div class="tl-photo-placeholder" style="background:rgba(245,166,35,0.1);" onclick="openPhoto('🎨','Antes — Coloração','20/02/2025')">🎨</div>
+                  <div class="tl-photo-placeholder" style="background:rgba(245,166,35,0.1);" onclick="openPhoto('✨','Depois — Coloração','20/02/2025')">✨</div>
+                  <div class="tl-photo-placeholder" style="background:rgba(245,166,35,0.1);" onclick="openPhoto('📸','Detalhe — Reflexos','20/02/2025')">📸</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="text-align:center;padding:16px 0;">
+              <button class="btn btn-ghost btn-sm">Ver todas as 28 visitas →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: GALLERY -->
+        <div id="tab-gallery" style="display:none;">
+          <div style="padding:14px 22px 8px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:0.78rem;color:var(--soft);">12 fotos · ordenadas por data</div>
+            <button class="btn btn-ghost btn-sm">+ Adicionar foto</button>
+          </div>
+          <div class="gallery-grid">
+            <div class="gallery-item" onclick="openPhoto('✨','Progressiva — Depois','14/04/2025')">
+              <div class="gallery-bg">✨</div>
+              <div class="gallery-label">Progressiva · Hoje</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item" onclick="openPhoto('💅','Manicure Gel Nude','18/03/2025')">
+              <div class="gallery-bg">💅</div>
+              <div class="gallery-label">Manicure · 18/03</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item" onclick="openPhoto('✂️','Corte + Escova','05/03/2025')">
+              <div class="gallery-bg">✂️</div>
+              <div class="gallery-label">Corte · 05/03</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item" onclick="openPhoto('🎨','Coloração Mel Dourado','20/02/2025')">
+              <div class="gallery-bg" style="font-size:2.2rem;">🎨</div>
+              <div class="gallery-label">Coloração · 20/02</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item" onclick="openPhoto('✨','Escova · Janeiro','15/01/2025')">
+              <div class="gallery-bg">🌟</div>
+              <div class="gallery-label">Escova · 15/01</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item" onclick="openPhoto('🦶','Pedicure Francesa','10/12/2024')">
+              <div class="gallery-bg">🦶</div>
+              <div class="gallery-label">Pedicure · 10/12</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item" onclick="openPhoto('✂️','Corte Bob · Nov','08/11/2024')">
+              <div class="gallery-bg">💇</div>
+              <div class="gallery-label">Corte Bob · 08/11</div>
+              <div class="gallery-overlay">🔍</div>
+            </div>
+            <div class="gallery-item gallery-add" onclick="alert('Adicionar nova foto')">
+              <div class="gallery-add-icon">📷</div>
+              <div>Adicionar foto</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: PREFERÊNCIAS -->
+        <div id="tab-prefs" style="display:none;" class="card-body">
+          <div class="pref-grid">
+            <div class="pref-item">
+              <div class="pref-label">✅ O que ela ama</div>
+              <div class="pref-chips">
+                <span class="pref-chip like">Escova babyliss</span>
+                <span class="pref-chip like">Hidratação intensa</span>
+                <span class="pref-chip like">Reflexos dourados</span>
+                <span class="pref-chip like">Gel nude rosé</span>
+                <span class="pref-chip like">Chá durante o atendimento</span>
+              </div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-label">❌ O que ela não gosta</div>
+              <div class="pref-chips">
+                <span class="pref-chip dislike">Tintura com amônia</span>
+                <span class="pref-chip dislike">Secador muito quente</span>
+                <span class="pref-chip dislike">Esperas longas</span>
+              </div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-label">⚠️ Alergias & restrições</div>
+              <div class="pref-chips">
+                <span class="pref-chip allergy">Alérgica a amônia</span>
+                <span class="pref-chip allergy">Sensibilidade no couro cabeludo</span>
+              </div>
+            </div>
+            <div class="pref-item">
+              <div class="pref-label">💅 Serviços favoritos</div>
+              <div class="pref-chips">
+                <span class="pref-chip like">Escova (1º lugar)</span>
+                <span class="pref-chip like">Manicure</span>
+                <span class="pref-chip like">Coloração</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;">
+            <div style="font-size:0.78rem;font-weight:600;color:var(--mid);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">📝 Anotações livres</div>
+            <textarea class="nota-area">Fernanda é uma das nossas clientes mais fiéis. Sempre pontual, muito educada. Prefere agendamentos pela manhã ou depois do almoço (nunca tarde da noite). Gosta de conversar durante o atendimento. Tem 2 filhas pequenas — às vezes vem com elas. Aniversário em 07/05 — lembrar de mandar mensagem e oferecer desconto especial! 🎂</textarea>
+          </div>
+          <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+            <button class="btn btn-primary btn-sm">Salvar anotações</button>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /col principal -->
+
+    <!-- ── SIDEBAR ── -->
+    <div>
+
+      <!-- AÇÕES RÁPIDAS -->
+      <div class="s-card" style="animation-delay:0.1s;">
+        <div class="s-card-header"><div class="s-card-title">Ações rápidas</div></div>
+        <div class="s-card-body">
+          <div class="quick-actions">
+            <button class="qa-btn qa-wpp">💬 Mandar mensagem no WhatsApp</button>
+            <button class="qa-btn qa-agenda" onclick="openAgenda()">📅 Novo agendamento</button>
+            <button class="qa-btn qa-reativacao">🤖 Enviar reativação via IA</button>
+            <button class="qa-btn qa-avaliacao">⭐ Pedir avaliação</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFORMAÇÕES -->
+      <div class="s-card" style="animation-delay:0.15s;">
+        <div class="s-card-header">
+          <div class="s-card-title">Informações</div>
+          <div class="card-action">Editar</div>
+        </div>
+        <div class="s-card-body">
+          <div class="info-list">
+            <div class="info-item">
+              <div class="info-icon">📱</div>
+              <div><span class="info-label">WhatsApp</span><span class="info-val">(62) 99876-5432</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">🎂</div>
+              <div><span class="info-label">Aniversário</span><span class="info-val">07 de maio · em 23 dias</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">📍</div>
+              <div><span class="info-label">Bairro</span><span class="info-val">Setor Bueno · Goiânia</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">📅</div>
+              <div><span class="info-label">Cliente desde</span><span class="info-val">Janeiro de 2023</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">👩</div>
+              <div><span class="info-label">Profissional preferida</span><span class="info-val">Carol</span></div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon">🕐</div>
+              <div><span class="info-label">Última visita</span><span class="info-val">Hoje · Escova</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FREQUÊNCIA -->
+      <div class="s-card" style="animation-delay:0.2s;">
+        <div class="s-card-header"><div class="s-card-title">Frequência de visitas</div></div>
+        <div class="s-card-body">
+          <div style="font-size:0.75rem;color:var(--soft);margin-bottom:4px;">Últimos 6 meses</div>
+          <div class="freq-chart">
+            <div class="freq-bar" style="height:60%;"></div>
+            <div class="freq-bar" style="height:80%;"></div>
+            <div class="freq-bar" style="height:40%;"></div>
+            <div class="freq-bar" style="height:90%;"></div>
+            <div class="freq-bar" style="height:70%;"></div>
+            <div class="freq-bar active" style="height:100%;"></div>
+          </div>
+          <div class="freq-months">
+            <div class="freq-month">Nov</div>
+            <div class="freq-month">Dez</div>
+            <div class="freq-month">Jan</div>
+            <div class="freq-month">Fev</div>
+            <div class="freq-month">Mar</div>
+            <div class="freq-month" style="color:var(--rose);font-weight:700;">Abr</div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;">
+            <div style="flex:1;background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;">
+              <div style="font-weight:700;font-size:1rem;">25 dias</div>
+              <div style="font-size:0.65rem;color:var(--soft);">freq. média</div>
+            </div>
+            <div style="flex:1;background:var(--cream);border-radius:var(--radius-sm);padding:10px 12px;text-align:center;">
+              <div style="font-weight:700;font-size:1rem;color:var(--done);">↑ 12%</div>
+              <div style="font-size:0.65rem;color:var(--soft);">vs ano passado</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IA SUGESTÕES -->
+      <div class="s-card" style="animation-delay:0.25s;">
+        <div class="s-card-header">
+          <div class="s-card-title">🤖 Sugestões da IA</div>
+        </div>
+        <div class="s-card-body">
+          <div class="ia-list">
+            <div class="ia-item">
+              <div class="ia-item-title">Oferecer cronograma capilar</div>
+              <div class="ia-item-desc">Fernanda fez coloração há 53 dias. Histórico mostra que ela repete a cada 60 dias — hora de lembrar.</div>
+              <div class="ia-item-btn" onclick="alert('Mensagem de reativação enviada!')">Enviar mensagem →</div>
+            </div>
+            <div class="ia-item">
+              <div class="ia-item-title">Desconto de aniversário</div>
+              <div class="ia-item-desc">Aniversário em 23 dias (07/mai). Enviar cupom de 15% off antecipado para garantir o agendamento.</div>
+              <div class="ia-item-btn" onclick="alert('Cupom de aniversário criado!')">Criar cupom →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sidebar -->
+  </div>
+</div>
+
+<!-- MODAL FOTO -->
+<div class="photo-modal" id="photoModal" onclick="if(event.target===this)closePhoto()">
+  <div style="position:relative;">
+    <div class="photo-modal-close" onclick="closePhoto()">✕</div>
+    <div class="photo-modal-inner">
+      <div class="photo-modal-img" id="photoEmoji">✨</div>
+      <div style="font-weight:600;font-size:0.95rem;" id="photoTitle">Progressiva</div>
+      <div class="photo-modal-meta" id="photoDate">14/04/2025</div>
+      <div style="display:flex;gap:8px;margin-top:14px;">
+        <button class="btn btn-ghost btn-sm" style="flex:1;">⬇ Baixar</button>
+        <button class="btn btn-ghost btn-sm" style="flex:1;">✏️ Editar nota</button>
+        <button class="btn btn-primary btn-sm" style="flex:1;">💬 Compartilhar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AGENDA -->
+<div class="photo-modal" id="agendaModal" onclick="if(event.target===this)closeAgenda()">
+  <div style="position:relative;">
+    <div class="photo-modal-close" onclick="closeAgenda()">✕</div>
+    <div class="photo-modal-inner">
+      <div style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:20px;">Novo agendamento — Fernanda</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div>
+          <div style="font-size:0.72rem;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Serviço</div>
+          <select style="width:100%;background:var(--cream);border:1.5px solid rgba(237,228,214,0.8);border-radius:10px;padding:10px 14px;font-size:0.86rem;color:var(--dark);">
+            <option>Escova + Hidratação</option>
+            <option>Corte + Escova</option>
+            <option>Coloração completa</option>
+            <option>Manicure</option>
+            <option>Pedicure</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <div style="font-size:0.72rem;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Data</div>
+            <input type="date" style="width:100%;background:var(--cream);border:1.5px solid rgba(237,228,214,0.8);border-radius:10px;padding:10px 14px;font-size:0.86rem;color:var(--dark);" value="2025-04-18">
+          </div>
+          <div>
+            <div style="font-size:0.72rem;font-weight:600;color:var(--mid);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Horário</div>
+            <select style="width:100%;background:var(--cream);border:1.5px solid rgba(237,228,214,0.8);border-radius:10px;padding:10px 14px;font-size:0.86rem;color:var(--dark);">
+              <option>14:00</option><option>15:00</option><option>16:00</option><option>09:00</option><option>10:00</option>
+            </select>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:4px;">
+          <button class="btn btn-ghost" style="flex:1;" onclick="closeAgenda()">Cancelar</button>
+          <button class="btn btn-primary" style="flex:1;" onclick="closeAgenda();alert('Agendamento confirmado! Lembrete será enviado via WhatsApp 24h antes. 🌸')">✓ Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(el, tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-timeline').style.display = tab === 'timeline' ? '' : 'none';
+  document.getElementById('tab-gallery').style.display = tab === 'gallery' ? '' : 'none';
+  document.getElementById('tab-prefs').style.display = tab === 'prefs' ? '' : 'none';
+}
+
+function openPhoto(emoji, title, date) {
+  document.getElementById('photoEmoji').textContent = emoji;
+  document.getElementById('photoTitle').textContent = title;
+  document.getElementById('photoDate').textContent = date;
+  document.getElementById('photoModal').classList.add('show');
+}
+function closePhoto() { document.getElementById('photoModal').classList.remove('show'); }
+
+function openAgenda() { document.getElementById('agendaModal').classList.add('show'); }
+function closeAgenda() { document.getElementById('agendaModal').classList.remove('show'); }
+</script>
+
+</body>
+</html>

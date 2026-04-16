@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vem se Cuidar — Entrar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rose:#E8614A;--rose-lt:#F2977F;--rose-bg:rgba(232,97,74,0.08);
+  --cream:#FAF6F0;--sand:#EDE4D6;--sand2:#E5D9C8;
+  --dark:#1A1410;--mid:#5C4A3A;--soft:#9E8070;--muted:#C4B5A8;
+  --white:#FFFFFF;--done:#4CAF7D;
+  --radius:18px;--radius-sm:12px;
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);overflow-x:hidden;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;outline:none;}
+input{font-family:'DM Sans',sans-serif;outline:none;}
+
+/* ── LAYOUT ── */
+.page-wrap{
+  min-height:100vh;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+}
+
+/* ── LEFT PANEL ── */
+.left-panel{
+  background:var(--dark);
+  padding:48px;
+  display:flex;flex-direction:column;
+  justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.left-panel::before{
+  content:'';position:absolute;
+  top:-120px;left:-80px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(232,97,74,0.2) 0%,transparent 65%);
+  border-radius:50%;pointer-events:none;
+}
+.left-panel::after{
+  content:'';position:absolute;
+  bottom:-100px;right:-60px;
+  width:300px;height:300px;
+  background:radial-gradient(circle,rgba(237,228,214,0.08) 0%,transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.left-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;color:#fff;letter-spacing:-0.02em;
+  position:relative;z-index:1;
+}
+.left-logo span{color:var(--rose);font-style:italic;}
+
+.left-content{position:relative;z-index:1;}
+.left-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(232,97,74,0.15);color:var(--rose-lt);
+  font-size:0.72rem;font-weight:600;padding:5px 14px;
+  border-radius:50px;text-transform:uppercase;letter-spacing:0.06em;
+  margin-bottom:20px;
+}
+.left-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,3vw,2.6rem);
+  color:#fff;line-height:1.15;
+  letter-spacing:-0.02em;margin-bottom:20px;
+}
+.left-title em{color:var(--rose-lt);font-style:italic;}
+.left-desc{
+  font-size:0.88rem;color:rgba(255,255,255,0.45);
+  line-height:1.7;font-weight:300;max-width:360px;
+  margin-bottom:32px;
+}
+.left-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.ls-item{text-align:center;}
+.ls-num{font-family:'Playfair Display',serif;font-size:1.6rem;color:#fff;}
+.ls-label{font-size:0.68rem;color:rgba(255,255,255,0.35);margin-top:2px;text-transform:uppercase;letter-spacing:0.05em;}
+
+/* Testimonial */
+.left-testimonial{
+  position:relative;z-index:1;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:16px;padding:18px 20px;
+}
+.lt-text{font-size:0.84rem;color:rgba(255,255,255,0.6);line-height:1.6;font-style:italic;font-weight:300;}
+.lt-author{display:flex;align-items:center;gap:10px;margin-top:12px;}
+.lt-avatar{width:32px;height:32px;border-radius:50%;background:var(--rose);color:#fff;font-size:0.8rem;font-weight:600;display:flex;align-items:center;justify-content:center;}
+.lt-name{font-size:0.78rem;color:rgba(255,255,255,0.5);font-weight:400;}
+
+/* ── RIGHT PANEL ── */
+.right-panel{
+  background:var(--cream);
+  display:flex;align-items:center;justify-content:center;
+  padding:48px 40px;
+}
+.form-box{width:100%;max-width:400px;}
+
+/* Tabs */
+.auth-tabs{display:flex;background:var(--sand);border-radius:50px;padding:4px;margin-bottom:32px;}
+.auth-tab{
+  flex:1;padding:10px;border-radius:50px;text-align:center;
+  font-size:0.84rem;font-weight:500;color:var(--mid);
+  cursor:pointer;transition:all 0.2s;
+}
+.auth-tab.active{background:var(--white);color:var(--dark);box-shadow:0 2px 8px rgba(26,20,16,0.1);}
+
+/* Forms */
+.auth-form{display:none;animation:fadeIn 0.2s ease;}
+.auth-form.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+.form-title{font-family:'Playfair Display',serif;font-size:1.5rem;letter-spacing:-0.02em;margin-bottom:6px;}
+.form-sub{font-size:0.82rem;color:var(--soft);margin-bottom:28px;font-weight:300;line-height:1.5;}
+
+.form-group{margin-bottom:16px;}
+.form-label{font-size:0.72rem;font-weight:600;color:var(--mid);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.05em;}
+.input-wrap{position:relative;}
+.form-control{
+  width:100%;background:var(--white);
+  border:1.5px solid rgba(237,228,214,0.9);
+  border-radius:var(--radius-sm);
+  padding:13px 16px;font-size:0.9rem;color:var(--dark);
+  transition:border-color 0.15s;
+}
+.form-control:focus{border-color:var(--rose);}
+.form-control::placeholder{color:var(--muted);}
+.input-icon{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  font-size:1rem;cursor:pointer;color:var(--muted);
+  transition:color 0.15s;user-select:none;
+}
+.input-icon:hover{color:var(--mid);}
+
+/* Password strength */
+.pwd-strength{margin-top:6px;height:3px;background:var(--sand);border-radius:50px;overflow:hidden;}
+.pwd-fill{height:100%;border-radius:50px;transition:width 0.3s,background 0.3s;width:0%;}
+.pwd-label{font-size:0.67rem;color:var(--soft);margin-top:4px;}
+
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* Submit btn */
+.btn-submit{
+  width:100%;padding:15px;background:var(--rose);color:#fff;
+  border:none;border-radius:50px;font-size:0.95rem;font-weight:600;
+  font-family:'DM Sans',sans-serif;cursor:pointer;
+  transition:all 0.2s;margin-top:4px;
+}
+.btn-submit:hover{background:#d04f38;box-shadow:0 6px 20px rgba(232,97,74,0.35);}
+.btn-submit:active{transform:scale(0.98);}
+
+/* Divider */
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
+.divider-line{flex:1;height:1px;background:rgba(237,228,214,0.8);}
+.divider-txt{font-size:0.72rem;color:var(--muted);}
+
+/* Social login */
+.btn-social{
+  width:100%;padding:12px;
+  background:var(--white);border:1.5px solid rgba(237,228,214,0.9);
+  border-radius:var(--radius-sm);font-size:0.86rem;font-weight:500;
+  color:var(--dark);display:flex;align-items:center;justify-content:center;gap:10px;
+  transition:all 0.15s;margin-bottom:10px;
+}
+.btn-social:hover{border-color:var(--rose);background:var(--rose-bg);}
+
+/* Forgot */
+.forgot-link{font-size:0.76rem;color:var(--rose);text-decoration:none;display:block;text-align:right;margin-top:-8px;margin-bottom:16px;}
+
+/* Terms */
+.terms-note{font-size:0.72rem;color:var(--soft);text-align:center;margin-top:16px;line-height:1.6;}
+.terms-note a{color:var(--rose);text-decoration:none;}
+
+/* Checkbox */
+.check-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;}
+.check-box{
+  width:18px;height:18px;min-width:18px;border-radius:5px;
+  border:1.5px solid var(--sand2);background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all 0.15s;margin-top:1px;
+}
+.check-box.on{background:var(--rose);border-color:var(--rose);color:#fff;font-size:0.7rem;}
+.check-txt{font-size:0.76rem;color:var(--mid);line-height:1.5;}
+.check-txt a{color:var(--rose);text-decoration:none;}
+
+/* Recovery */
+.recovery-back{
+  display:flex;align-items:center;gap:6px;
+  font-size:0.8rem;color:var(--mid);cursor:pointer;
+  margin-bottom:24px;
+}
+.recovery-back:hover{color:var(--rose);}
+.recovery-success{text-align:center;padding:20px 0;display:none;}
+.rs-icon{font-size:2.5rem;margin-bottom:12px;}
+.rs-title{font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:8px;}
+.rs-sub{font-size:0.82rem;color:var(--soft);line-height:1.6;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:780px){
+  .page-wrap{grid-template-columns:1fr;}
+  .left-panel{display:none;}
+  .right-panel{padding:32px 24px;min-height:100vh;align-items:flex-start;padding-top:48px;}
+  .form-box{max-width:100%;}
+}
+@media(max-width:400px){
+  .right-panel{padding:24px 16px;}
+  .form-row-2{grid-template-columns:1fr;}
+}
+</style>
+
+<!-- ═══ SUPABASE CONFIG ═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://xxxjoaccaxxonzdfpgjj.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGpvYWNjYXh4b256ZGZwZ2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjkzMDksImV4cCI6MjA5MTk0NTMwOX0.Gv9tYOH5REGE2XYjl-bcliJDMugsOe3L8tP7pQd1hkA';
+  const SALAO_DEMO_ID = 'a1b2c3d4-0000-0000-0000-000000000001';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<!-- ════════════════════════════════════════════════════════════════ -->
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="left-logo">Vem se <span>Cuidar</span></div>
+
+    <div class="left-content">
+      <div class="left-tag">🌸 Sistema para salões</div>
+      <h1 class="left-title">O salão que você<br>merece, <em>finalmente</em><br>organizado.</h1>
+      <p class="left-desc">Agenda, clientes, financeiro e agente de IA no WhatsApp — tudo num só lugar. Sem complicação.</p>
+      <div class="left-stats">
+        <div class="ls-item"><div class="ls-num">850+</div><div class="ls-label">salões na fila</div></div>
+        <div class="ls-item"><div class="ls-num">0%</div><div class="ls-label">faltas no beta</div></div>
+        <div class="ls-item"><div class="ls-num">3×</div><div class="ls-label">reativações</div></div>
+      </div>
+    </div>
+
+    <div class="left-testimonial">
+      <div class="lt-text">"Antes eu perdia cliente todo dia por não responder rápido. Agora o agente responde sozinho e minha agenda encheu em 2 semanas."</div>
+      <div class="lt-author">
+        <div class="lt-avatar">C</div>
+        <div class="lt-name">Carol Mendes · Salão da Carol, Goiânia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+    <div class="form-box">
+
+      <!-- Tabs -->
+      <div class="auth-tabs" id="authTabs">
+        <div class="auth-tab active" onclick="switchTab('login')">Entrar</div>
+        <div class="auth-tab" onclick="switchTab('cadastro')">Criar conta</div>
+      </div>
+
+      <!-- ── LOGIN ── -->
+      <div class="auth-form active" id="form-login">
+        <div class="form-title">Bem-vinda de volta 🌸</div>
+        <div class="form-sub">Entre com seu e-mail e senha para acessar o painel do seu salão.</div>
+
+        <button class="btn-social" onclick="alert('Login com Google em breve!')">
+          <span>🔵</span> Entrar com Google
+        </button>
+
+        <div class="divider">
+          <div class="divider-line"></div>
+          <div class="divider-txt">ou com e-mail</div>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input class="form-control" type="email" placeholder="carol@salaodacarol.com.br" id="loginEmail">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <div class="input-wrap">
+            <input class="form-control" type="password" placeholder="••••••••" id="loginPwd" style="padding-right:44px;">
+            <span class="input-icon" onclick="togglePwd('loginPwd',this)">👁</span>
+          </div>
+        </div>
+
+        <a href="#" class="forgot-link" onclick="switchTab('recovery');return false;">Esqueci minha senha →</a>
+
+        <button class="btn-submit" onclick="doLogin()">Entrar no painel →</button>
+
+        <div class="terms-note">Ao entrar você concorda com nossos <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a>.</div>
+      </div>
+
+      <!-- ── CADASTRO ── -->
+      <div class="auth-form" id="form-cadastro">
+        <div class="form-title">Crie sua conta 🌸</div>
+        <div class="form-sub">10 dias grátis. Sem cartão de crédito. Cancele quando quiser.</div>
+
+        <button class="btn-social" onclick="alert('Cadastro com Google em breve!')">
+          <span>🔵</span> Cadastrar com Google
+        </button>
+
+        <div class="divider">
+          <div class="divider-line"></div>
+          <div class="divider-txt">ou preencha os dados</div>
+          <div class="divider-line"></div>
+        </div>
+
+        <div class="form-row-2">
+          <div class="form-group">
+            <label class="form-label">Seu nome</label>
+            <input class="form-control" type="text" placeholder="Carol">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nome do salão</label>
+            <input class="form-control" type="text" placeholder="Salão da Carol">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">WhatsApp</label>
+          <input class="form-control" type="tel" placeholder="(62) 99999-0000" id="cadPhone">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">E-mail</label>
+          <input class="form-control" type="email" placeholder="carol@salaodacarol.com.br" id="cadEmail">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Senha</label>
+          <div class="input-wrap">
+            <input class="form-control" type="password" placeholder="Mínimo 8 caracteres" id="cadPwd" style="padding-right:44px;" oninput="checkPwd(this.value)">
+            <span class="input-icon" onclick="togglePwd('cadPwd',this)">👁</span>
+          </div>
+          <div class="pwd-strength"><div class="pwd-fill" id="pwdFill"></div></div>
+          <div class="pwd-label" id="pwdLabel">Digite uma senha segura</div>
+        </div>
+
+        <div class="check-row">
+          <div class="check-box" id="termsCheck" onclick="this.classList.toggle('on');this.textContent=this.classList.contains('on')?'✓':''"></div>
+          <div class="check-txt">Li e aceito os <a href="#">Termos de Uso</a> e a <a href="#">Política de Privacidade</a>. Concordo em receber comunicações sobre o produto.</div>
+        </div>
+
+        <button class="btn-submit" onclick="doCadastro()">Criar conta grátis →</button>
+
+        <div class="terms-note">Ao criar sua conta você inicia 10 dias de teste gratuito no plano Studio.</div>
+      </div>
+
+      <!-- ── RECUPERAÇÃO DE SENHA ── -->
+      <div class="auth-form" id="form-recovery">
+        <div class="recovery-back" onclick="switchTab('login')">← Voltar ao login</div>
+        <div class="form-title">Recuperar senha</div>
+        <div class="form-sub">Digite seu e-mail e enviaremos um link para criar uma nova senha.</div>
+
+        <div id="recoveryForm">
+          <div class="form-group">
+            <label class="form-label">E-mail cadastrado</label>
+            <input class="form-control" type="email" placeholder="carol@salaodacarol.com.br" id="recoveryEmail">
+          </div>
+          <button class="btn-submit" onclick="doRecovery()">Enviar link de recuperação →</button>
+        </div>
+
+        <div class="recovery-success" id="recoverySuccess">
+          <div class="rs-icon">📧</div>
+          <div class="rs-title">E-mail enviado!</div>
+          <div class="rs-sub">Verifique sua caixa de entrada. O link expira em 30 minutos.<br><br>Não recebeu? <a href="#" style="color:var(--rose);" onclick="doRecovery()">Reenviar</a></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+  document.getElementById('form-' + tab).classList.add('active');
+  document.querySelectorAll('.auth-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'cadastro'));
+  });
+}
+
+function togglePwd(id, icon) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+  icon.textContent = el.type === 'password' ? '👁' : '🙈';
+}
+
+function checkPwd(val) {
+  const fill = document.getElementById('pwdFill');
+  const label = document.getElementById('pwdLabel');
+  let strength = 0;
+  if (val.length >= 8) strength++;
+  if (/[A-Z]/.test(val)) strength++;
+  if (/[0-9]/.test(val)) strength++;
+  if (/[^A-Za-z0-9]/.test(val)) strength++;
+  const colors = ['#E8614A','#F5A623','#4CAF7D','#4CAF7D'];
+  const labels = ['Muito fraca','Fraca','Boa','Forte 💪'];
+  fill.style.width = (strength * 25) + '%';
+  fill.style.background = colors[strength - 1] || '#C4B5A8';
+  label.textContent = val.length === 0 ? 'Digite uma senha segura' : (labels[strength - 1] || 'Muito fraca');
+  label.style.color = colors[strength - 1] || 'var(--soft)';
+}
+
+// ── Botão de login com estado de loading ──
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Aguarde...' : btn.dataset.label;
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd   = document.getElementById('loginPwd').value;
+  if (!email || !pwd) { alert('Preencha e-mail e senha.'); return; }
+
+  const btn = document.querySelector('#form-login .btn-primary');
+  if (btn) { btn.dataset.label = btn.textContent; btn.disabled = true; btn.textContent = 'Entrando...'; }
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+
+  if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || 'Entrar'; }
+
+  if (error) {
+    alert('E-mail ou senha incorretos. Tente novamente.');
+    return;
+  }
+  window.location.href = '02-admin-dashboard.html';
+}
+
+async function doCadastro() {
+  if (!document.getElementById('termsCheck').classList.contains('on')) {
+    alert('Aceite os Termos de Uso para continuar.'); return;
+  }
+  const nome  = document.getElementById('cadNome')  ? document.getElementById('cadNome').value.trim()  : '';
+  const phone = document.getElementById('cadPhone').value.trim();
+  const email = document.getElementById('cadEmail').value.trim();
+  const pwd   = document.getElementById('cadPwd').value;
+
+  if (!email || !pwd) { alert('Preencha e-mail e senha.'); return; }
+  if (pwd.length < 6)  { alert('A senha deve ter pelo menos 6 caracteres.'); return; }
+
+  const btn = document.querySelector('#form-cadastro .btn-primary');
+  if (btn) { btn.dataset.label = btn.textContent; btn.disabled = true; btn.textContent = 'Criando conta...'; }
+
+  const { data, error } = await sb.auth.signUp({
+    email,
+    password: pwd,
+    options: { data: { nome, phone } }
+  });
+
+  if (btn) { btn.disabled = false; btn.textContent = btn.dataset.label || 'Criar conta'; }
+
+  if (error) {
+    alert('Erro ao criar conta: ' + error.message);
+    return;
+  }
+  // Redireciona para onboarding após cadastro
+  window.location.href = '07-onboarding.html';
+}
+
+async function doRecovery() {
+  const email = document.getElementById('recoveryEmail').value.trim();
+  if (!email) { alert('Digite seu e-mail.'); return; }
+
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/06-login-cadastro.html'
+  });
+
+  if (error) { alert('Erro: ' + error.message); return; }
+  document.getElementById('recoveryForm').style.display = 'none';
+  document.getElementById('recoverySuccess').style.display = 'block';
+}
+
+// Verificar se já está logado ao carregar a página
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) window.location.href = '02-admin-dashboard.html';
+});
+</script>
+</body>
+</html>

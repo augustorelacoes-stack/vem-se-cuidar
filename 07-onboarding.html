@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vem se Cuidar — Configurar seu salão</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --rose:#E8614A;--rose-lt:#F2977F;--rose-bg:rgba(232,97,74,0.08);
+  --cream:#FAF6F0;--sand:#EDE4D6;--sand2:#E5D9C8;
+  --dark:#1A1410;--mid:#5C4A3A;--soft:#9E8070;--muted:#C4B5A8;
+  --white:#FFFFFF;--done:#4CAF7D;--done-bg:rgba(76,175,125,0.1);
+  --radius:18px;--radius-sm:12px;
+}
+html,body{min-height:100%;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;border:none;outline:none;}
+input,select,textarea{font-family:'DM Sans',sans-serif;outline:none;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:var(--sand2);border-radius:50px;}
+
+/* ── TOPBAR ── */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  background:rgba(250,246,240,0.92);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(237,228,214,0.7);
+  padding:14px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--dark);}
+.logo span{color:var(--rose);font-style:italic;}
+.save-later{font-size:0.78rem;color:var(--soft);cursor:pointer;text-decoration:underline;}
+
+/* ── PROGRESS ── */
+.progress-bar{
+  height:3px;background:var(--sand);
+  position:sticky;top:53px;z-index:29;
+}
+.progress-fill{
+  height:100%;background:var(--rose);
+  border-radius:0 2px 2px 0;
+  transition:width 0.4s ease;
+}
+
+/* ── MAIN ── */
+.main{max-width:600px;margin:0 auto;padding:0 24px 120px;}
+
+/* ── STEP HEADER ── */
+.step-header{padding:32px 0 24px;}
+.step-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--sand);color:var(--mid);
+  font-size:0.7rem;font-weight:600;padding:4px 12px;
+  border-radius:50px;text-transform:uppercase;letter-spacing:0.06em;
+  margin-bottom:14px;
+}
+.step-title{font-family:'Playfair Display',serif;font-size:1.6rem;letter-spacing:-0.02em;margin-bottom:8px;}
+.step-desc{font-size:0.85rem;color:var(--soft);line-height:1.6;font-weight:300;}
+
+/* ── STEP PANELS ── */
+.step-panel{display:none;animation:fadeUp 0.25s ease;}
+.step-panel.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── FORM ELEMENTS ── */
+.form-group{margin-bottom:18px;}
+.form-label{font-size:0.72rem;font-weight:600;color:var(--mid);display:block;margin-bottom:7px;text-transform:uppercase;letter-spacing:0.05em;}
+.form-control{
+  width:100%;background:var(--white);
+  border:1.5px solid rgba(237,228,214,0.9);
+  border-radius:var(--radius-sm);padding:13px 16px;
+  font-size:0.9rem;color:var(--dark);transition:border-color 0.15s;
+}
+.form-control:focus{border-color:var(--rose);}
+.form-control::placeholder{color:var(--muted);}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-hint{font-size:0.7rem;color:var(--soft);margin-top:5px;}
+
+/* ── CARD ── */
+.card{background:var(--white);border-radius:var(--radius);border:1px solid rgba(237,228,214,0.6);padding:20px;margin-bottom:14px;box-shadow:0 2px 12px rgba(26,20,16,0.06);}
+
+/* ── NICHO CARDS ── */
+.nicho-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:6px;}
+.nicho-card{
+  border:2px solid rgba(237,228,214,0.8);border-radius:var(--radius-sm);
+  padding:16px;text-align:center;cursor:pointer;transition:all 0.15s;
+  background:var(--white);-webkit-tap-highlight-color:transparent;
+}
+.nicho-card:hover{border-color:var(--rose);background:var(--rose-bg);}
+.nicho-card.selected{border-color:var(--rose);background:var(--rose-bg);}
+.nicho-icon{font-size:1.8rem;margin-bottom:8px;}
+.nicho-name{font-size:0.84rem;font-weight:600;}
+.nicho-desc{font-size:0.7rem;color:var(--soft);margin-top:3px;}
+
+/* ── PROFISSIONAL CARD ── */
+.prof-add-card{
+  border:2px dashed var(--sand2);border-radius:var(--radius-sm);
+  padding:16px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all 0.15s;margin-bottom:10px;
+  -webkit-tap-highlight-color:transparent;
+}
+.prof-add-card:hover{border-color:var(--rose);background:var(--rose-bg);}
+.prof-add-icon{width:40px;height:40px;border-radius:50%;background:var(--sand);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.prof-card{
+  background:var(--white);border-radius:var(--radius-sm);
+  border:1.5px solid rgba(237,228,214,0.8);
+  padding:14px 16px;display:flex;align-items:center;gap:12px;
+  margin-bottom:10px;
+}
+.prof-avatar{width:40px;height:40px;border-radius:50%;color:#fff;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1rem;}
+.prof-info{flex:1;}
+.prof-name{font-weight:600;font-size:0.88rem;}
+.prof-role{font-size:0.72rem;color:var(--soft);}
+.prof-remove{color:var(--muted);font-size:0.9rem;cursor:pointer;padding:4px;transition:color 0.15s;}
+.prof-remove:hover{color:var(--rose);}
+
+/* ── SERVIÇO TOGGLE ── */
+.servico-item{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 16px;background:var(--cream);border-radius:var(--radius-sm);
+  margin-bottom:8px;cursor:pointer;transition:background 0.15s;
+}
+.servico-item.selected{background:var(--rose-bg);}
+.servico-check{
+  width:22px;height:22px;border-radius:6px;border:2px solid var(--sand2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all 0.15s;font-size:0.72rem;
+}
+.servico-item.selected .servico-check{background:var(--rose);border-color:var(--rose);color:#fff;}
+.servico-icon{font-size:1rem;flex-shrink:0;}
+.servico-name{flex:1;font-size:0.86rem;font-weight:500;}
+.servico-price{
+  background:var(--white);border:1.5px solid rgba(237,228,214,0.8);
+  border-radius:8px;padding:5px 10px;font-size:0.8rem;width:72px;
+  text-align:center;color:var(--dark);
+}
+.servico-item:not(.selected) .servico-price{opacity:0.4;pointer-events:none;}
+
+/* ── WHATSAPP SETUP ── */
+.wpp-box{
+  background:var(--dark);border-radius:var(--radius);padding:24px;
+  position:relative;overflow:hidden;margin-bottom:16px;
+}
+.wpp-box::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(232,97,74,0.2) 0%,transparent 70%);border-radius:50%;}
+.wpp-title{font-weight:600;font-size:0.95rem;color:#fff;margin-bottom:6px;position:relative;z-index:1;}
+.wpp-desc{font-size:0.78rem;color:rgba(255,255,255,0.45);margin-bottom:16px;line-height:1.5;position:relative;z-index:1;}
+.wpp-input-row{display:flex;gap:10px;position:relative;z-index:1;}
+.wpp-input{
+  flex:1;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);
+  border-radius:var(--radius-sm);padding:11px 14px;color:#fff;font-size:0.88rem;
+  font-family:'DM Sans',sans-serif;
+}
+.wpp-input::placeholder{color:rgba(255,255,255,0.3);}
+.wpp-input:focus{border-color:var(--rose);outline:none;}
+.btn-wpp-connect{
+  background:var(--rose);color:#fff;padding:11px 18px;
+  border-radius:var(--radius-sm);font-size:0.84rem;font-weight:600;
+  white-space:nowrap;transition:all 0.2s;
+}
+.btn-wpp-connect:hover{background:#d04f38;}
+.wpp-status{display:flex;align-items:center;gap:8px;margin-top:12px;position:relative;z-index:1;}
+.wpp-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);}
+.wpp-dot.connected{background:var(--done);}
+.wpp-status-txt{font-size:0.74rem;color:rgba(255,255,255,0.4);}
+
+/* ── TOGGLE ── */
+.toggle{width:44px;height:24px;background:var(--sand2);border-radius:50px;position:relative;cursor:pointer;transition:background 0.2s;flex-shrink:0;}
+.toggle.on{background:var(--rose);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);}
+.toggle.on::after{transform:translateX(20px);}
+
+/* ── HORARIO GRID ── */
+.horario-grid{display:flex;flex-direction:column;gap:8px;}
+.horario-row{display:grid;grid-template-columns:90px 1fr 1fr 44px;gap:8px;align-items:center;padding:10px 14px;background:var(--cream);border-radius:var(--radius-sm);}
+.horario-dia{font-size:0.84rem;font-weight:500;}
+.horario-input{background:var(--white);border:1.5px solid rgba(237,228,214,0.8);border-radius:8px;padding:7px 10px;font-size:0.82rem;color:var(--dark);text-align:center;width:100%;}
+.horario-row.fechado{opacity:0.4;}
+.horario-row.fechado .horario-input{pointer-events:none;}
+
+/* ── PLANO CARDS ── */
+.plano-grid{display:flex;flex-direction:column;gap:12px;}
+.plano-card{
+  border:2px solid rgba(237,228,214,0.8);border-radius:var(--radius);
+  padding:20px;cursor:pointer;transition:all 0.15s;background:var(--white);
+  display:flex;gap:14px;align-items:flex-start;
+  -webkit-tap-highlight-color:transparent;
+}
+.plano-card:hover{border-color:var(--rose);}
+.plano-card.selected{border-color:var(--rose);background:var(--rose-bg);}
+.plano-card.popular{position:relative;}
+.plano-popular-tag{
+  position:absolute;top:-12px;right:16px;
+  background:var(--rose);color:#fff;font-size:0.64rem;font-weight:700;
+  padding:3px 12px;border-radius:50px;text-transform:uppercase;letter-spacing:0.06em;
+}
+.plano-radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--sand2);flex-shrink:0;margin-top:2px;position:relative;transition:all 0.15s;}
+.plano-card.selected .plano-radio{border-color:var(--rose);background:var(--rose);}
+.plano-card.selected .plano-radio::after{content:'';width:8px;height:8px;background:#fff;border-radius:50%;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);}
+.plano-body{flex:1;}
+.plano-name{font-weight:700;font-size:0.95rem;margin-bottom:2px;}
+.plano-price{font-family:'Playfair Display',serif;font-size:1.3rem;margin-bottom:6px;}
+.plano-price small{font-size:0.72rem;font-weight:400;font-family:'DM Sans',sans-serif;color:var(--soft);}
+.plano-features{font-size:0.76rem;color:var(--soft);line-height:1.7;font-weight:300;}
+
+/* ── SUCCESS ── */
+.success-screen{text-align:center;padding:48px 0;}
+.success-animation{font-size:4rem;margin-bottom:20px;animation:pop 0.4s ease;}
+@keyframes pop{from{transform:scale(0);}to{transform:scale(1);}}
+.success-title{font-family:'Playfair Display',serif;font-size:1.8rem;letter-spacing:-0.02em;margin-bottom:10px;}
+.success-desc{font-size:0.88rem;color:var(--soft);line-height:1.7;max-width:360px;margin:0 auto 32px;font-weight:300;}
+.checklist{text-align:left;max-width:320px;margin:0 auto 32px;}
+.cl-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(237,228,214,0.5);font-size:0.84rem;}
+.cl-icon{color:var(--done);font-size:0.9rem;flex-shrink:0;}
+
+/* ── BOTTOM BAR ── */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);padding:14px 24px calc(14px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(237,228,214,0.8);
+  box-shadow:0 -4px 20px rgba(26,20,16,0.07);z-index:30;
+}
+.bottom-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.btn-back{background:transparent;color:var(--mid);font-size:0.84rem;font-weight:500;padding:10px;transition:color 0.15s;}
+.btn-back:hover{color:var(--rose);}
+.btn-next{
+  background:var(--rose);color:#fff;padding:13px 32px;
+  border-radius:50px;font-size:0.9rem;font-weight:600;
+  font-family:'DM Sans',sans-serif;transition:all 0.2s;
+}
+.btn-next:hover{background:#d04f38;box-shadow:0 4px 16px rgba(232,97,74,0.35);}
+.btn-next:disabled{background:var(--muted);cursor:default;box-shadow:none;}
+.step-counter{font-size:0.75rem;color:var(--soft);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  .main{padding:0 16px 100px;}
+  .nicho-grid{grid-template-columns:1fr 1fr;}
+  .form-row-2{grid-template-columns:1fr;}
+  .horario-row{grid-template-columns:80px 1fr 1fr 36px;gap:6px;}
+  .step-title{font-size:1.3rem;}
+  .wpp-input-row{flex-direction:column;}
+}
+</style>
+
+<!-- ═══ SUPABASE CONFIG ═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL  = 'https://xxxjoaccaxxonzdfpgjj.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4eGpvYWNjYXh4b256ZGZwZ2pqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjkzMDksImV4cCI6MjA5MTk0NTMwOX0.Gv9tYOH5REGE2XYjl-bcliJDMugsOe3L8tP7pQd1hkA';
+  const SALAO_DEMO_ID = 'a1b2c3d4-0000-0000-0000-000000000001';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+<!-- ════════════════════════════════════════════════════════════════ -->
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">Vem se <span>Cuidar</span></div>
+  <span class="save-later" onclick="window.location.href='02-admin-dashboard.html'">Continuar depois</span>
+</div>
+<div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:16%;"></div></div>
+
+<div class="main">
+
+  <!-- ── STEP 1: TIPO DE NEGÓCIO ── -->
+  <div class="step-panel active" id="step1">
+    <div class="step-header">
+      <div class="step-badge">Passo 1 de 6</div>
+      <div class="step-title">Que tipo de salão você tem?</div>
+      <div class="step-desc">Vamos personalizar o sistema para o seu negócio.</div>
+    </div>
+    <div class="nicho-grid">
+      <div class="nicho-card selected" onclick="selectNicho(this)">
+        <div class="nicho-icon">💇</div>
+        <div class="nicho-name">Salão de beleza</div>
+        <div class="nicho-desc">Cabelo, cor, tratamentos</div>
+      </div>
+      <div class="nicho-card" onclick="selectNicho(this)">
+        <div class="nicho-icon">💅</div>
+        <div class="nicho-name">Esmalteria / Nail art</div>
+        <div class="nicho-desc">Manicure, pedicure, gel</div>
+      </div>
+      <div class="nicho-card" onclick="selectNicho(this)">
+        <div class="nicho-icon">✨</div>
+        <div class="nicho-name">Studio de estética</div>
+        <div class="nicho-desc">Depilação, sobrancelha, limpeza</div>
+      </div>
+      <div class="nicho-card" onclick="selectNicho(this)">
+        <div class="nicho-icon">🌿</div>
+        <div class="nicho-name">Spa & bem-estar</div>
+        <div class="nicho-desc">Massagem, relaxamento</div>
+      </div>
+      <div class="nicho-card" onclick="selectNicho(this)">
+        <div class="nicho-icon">✂️</div>
+        <div class="nicho-name">Barbearia</div>
+        <div class="nicho-desc">Corte masculino, barba</div>
+      </div>
+      <div class="nicho-card" onclick="selectNicho(this)">
+        <div class="nicho-icon">🏪</div>
+        <div class="nicho-name">Salão completo</div>
+        <div class="nicho-desc">Todos os serviços acima</div>
+      </div>
+    </div>
+    <div class="form-group" style="margin-top:8px;">
+      <label class="form-label">Quantas profissionais trabalham com você?</label>
+      <select class="form-control">
+        <option>Só eu (autônoma)</option>
+        <option selected>2 a 3 profissionais</option>
+        <option>4 a 6 profissionais</option>
+        <option>7 ou mais</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: DADOS DO SALÃO ── -->
+  <div class="step-panel" id="step2">
+    <div class="step-header">
+      <div class="step-badge">Passo 2 de 6</div>
+      <div class="step-title">Dados do seu salão</div>
+      <div class="step-desc">Essas informações aparecem na sua página pública de agendamento.</div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <div style="width:64px;height:64px;border-radius:16px;background:var(--rose);color:#fff;font-family:'Playfair Display',serif;font-size:1.6rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;" onclick="alert('Upload de logo')">S</div>
+        <div>
+          <div style="font-size:0.84rem;font-weight:500;">Logo do salão</div>
+          <div style="font-size:0.72rem;color:var(--soft);margin-top:3px;">Clique para adicionar</div>
+          <button class="btn-back" style="padding:4px 0;font-size:0.74rem;color:var(--rose);" onclick="alert('Upload de logo')">📷 Escolher foto</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nome do salão</label>
+        <input class="form-control" type="text" placeholder="Ex: Salão da Carol" value="Salão da Carol">
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label class="form-label">Cidade</label>
+          <input class="form-control" type="text" placeholder="Goiânia" value="Goiânia">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Bairro</label>
+          <input class="form-control" type="text" placeholder="Setor Bueno" value="Setor Bueno">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Endereço completo</label>
+        <input class="form-control" type="text" placeholder="Rua, número, complemento">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Instagram</label>
+        <input class="form-control" type="text" placeholder="@salaodacarol">
+        <div class="form-hint">Seus clientes vão poder te encontrar pelo Instagram</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── STEP 3: PROFISSIONAIS ── -->
+  <div class="step-panel" id="step3">
+    <div class="step-header">
+      <div class="step-badge">Passo 3 de 6</div>
+      <div class="step-title">Quem trabalha com você?</div>
+      <div class="step-desc">Adicione as profissionais do seu salão. Você pode editar depois.</div>
+    </div>
+
+    <!-- Você mesma -->
+    <div class="prof-card" style="border-color:rgba(232,97,74,0.3);background:var(--rose-bg);">
+      <div class="prof-avatar" style="background:var(--rose);">C</div>
+      <div class="prof-info">
+        <div class="prof-name">Carol Mendes (você)</div>
+        <div class="prof-role">Proprietária · Cabeleireira</div>
+      </div>
+      <div style="font-size:0.68rem;background:var(--rose-bg);color:var(--rose);padding:3px 10px;border-radius:50px;font-weight:600;">Conta principal</div>
+    </div>
+
+    <div id="profList"></div>
+
+    <div class="prof-add-card" onclick="addProf()">
+      <div class="prof-add-icon">➕</div>
+      <div>
+        <div style="font-weight:600;font-size:0.86rem;">Adicionar profissional</div>
+        <div style="font-size:0.72rem;color:var(--soft);margin-top:2px;">Colaboradora ou autônoma que aluga cadeira</div>
+      </div>
+    </div>
+
+    <div style="background:rgba(74,144,217,0.08);border-radius:var(--radius-sm);padding:12px 14px;font-size:0.78rem;color:#2d72b8;line-height:1.5;">
+      💡 Cada profissional terá seu próprio acesso para gerenciar agenda e ver suas comissões.
+    </div>
+  </div>
+
+  <!-- ── STEP 4: SERVIÇOS ── -->
+  <div class="step-panel" id="step4">
+    <div class="step-header">
+      <div class="step-badge">Passo 4 de 6</div>
+      <div class="step-title">Quais serviços você oferece?</div>
+      <div class="step-desc">Selecione e ajuste os preços. Você pode adicionar mais depois.</div>
+    </div>
+    <div id="servicosList">
+      <div class="servico-item selected" onclick="toggleServico(this)">
+        <div class="servico-check">✓</div>
+        <div class="servico-icon">💨</div>
+        <div class="servico-name">Escova</div>
+        <input class="servico-price" type="text" value="R$80" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item selected" onclick="toggleServico(this)">
+        <div class="servico-check">✓</div>
+        <div class="servico-icon">✂️</div>
+        <div class="servico-name">Corte + Escova</div>
+        <input class="servico-price" type="text" value="R$120" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item selected" onclick="toggleServico(this)">
+        <div class="servico-check">✓</div>
+        <div class="servico-icon">🎨</div>
+        <div class="servico-name">Coloração</div>
+        <input class="servico-price" type="text" value="R$180" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item selected" onclick="toggleServico(this)">
+        <div class="servico-check">✓</div>
+        <div class="servico-icon">✨</div>
+        <div class="servico-name">Progressiva / Btox</div>
+        <input class="servico-price" type="text" value="R$280" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item selected" onclick="toggleServico(this)">
+        <div class="servico-check">✓</div>
+        <div class="servico-icon">💅</div>
+        <div class="servico-name">Manicure</div>
+        <input class="servico-price" type="text" value="R$45" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item" onclick="toggleServico(this)">
+        <div class="servico-check"></div>
+        <div class="servico-icon">🦶</div>
+        <div class="servico-name">Pedicure</div>
+        <input class="servico-price" type="text" value="R$50" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item" onclick="toggleServico(this)">
+        <div class="servico-check"></div>
+        <div class="servico-icon">💧</div>
+        <div class="servico-name">Hidratação Capilar</div>
+        <input class="servico-price" type="text" value="R$90" onclick="event.stopPropagation()">
+      </div>
+      <div class="servico-item" onclick="toggleServico(this)">
+        <div class="servico-check"></div>
+        <div class="servico-icon">🪄</div>
+        <div class="servico-name">Design de Sobrancelha</div>
+        <input class="servico-price" type="text" value="R$35" onclick="event.stopPropagation()">
+      </div>
+    </div>
+    <button class="btn-back" style="display:flex;align-items:center;gap:6px;margin-top:8px;color:var(--rose);font-size:0.8rem;">+ Adicionar serviço personalizado</button>
+  </div>
+
+  <!-- ── STEP 5: HORÁRIOS + WHATSAPP ── -->
+  <div class="step-panel" id="step5">
+    <div class="step-header">
+      <div class="step-badge">Passo 5 de 6</div>
+      <div class="step-title">Horários e WhatsApp</div>
+      <div class="step-desc">Configure quando o salão funciona e conecte o agente de IA.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+      <div style="font-weight:600;font-size:0.92rem;margin-bottom:14px;">🕐 Horários de funcionamento</div>
+      <div class="horario-grid">
+        <div class="horario-row">
+          <div class="horario-dia">Segunda</div>
+          <input class="horario-input" value="09:00">
+          <input class="horario-input" value="19:00">
+          <div class="toggle on" onclick="toggleHorario(this)"></div>
+        </div>
+        <div class="horario-row">
+          <div class="horario-dia">Terça</div>
+          <input class="horario-input" value="09:00">
+          <input class="horario-input" value="19:00">
+          <div class="toggle on" onclick="toggleHorario(this)"></div>
+        </div>
+        <div class="horario-row">
+          <div class="horario-dia">Quarta</div>
+          <input class="horario-input" value="09:00">
+          <input class="horario-input" value="19:00">
+          <div class="toggle on" onclick="toggleHorario(this)"></div>
+        </div>
+        <div class="horario-row">
+          <div class="horario-dia">Quinta</div>
+          <input class="horario-input" value="09:00">
+          <input class="horario-input" value="19:00">
+          <div class="toggle on" onclick="toggleHorario(this)"></div>
+        </div>
+        <div class="horario-row">
+          <div class="horario-dia">Sexta</div>
+          <input class="horario-input" value="09:00">
+          <input class="horario-input" value="19:00">
+          <div class="toggle on" onclick="toggleHorario(this)"></div>
+        </div>
+        <div class="horario-row">
+          <div class="horario-dia">Sábado</div>
+          <input class="horario-input" value="09:00">
+          <input class="horario-input" value="17:00">
+          <div class="toggle on" onclick="toggleHorario(this)"></div>
+        </div>
+        <div class="horario-row fechado" id="domingoRow">
+          <div class="horario-dia">Domingo</div>
+          <input class="horario-input" value="—">
+          <input class="horario-input" value="—">
+          <div class="toggle" onclick="toggleHorario(this)"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wpp-box">
+      <div class="wpp-title">🤖 Conectar Agente de IA no WhatsApp</div>
+      <div class="wpp-desc">Digite o número do WhatsApp do salão. O agente vai atender, agendar e confirmar as clientes automaticamente.</div>
+      <div class="wpp-input-row">
+        <input class="wpp-input" type="tel" placeholder="(62) 99999-0000" id="wppNumber">
+        <button class="btn-wpp-connect" onclick="connectWpp()">Conectar ›</button>
+      </div>
+      <div class="wpp-status" id="wppStatus">
+        <div class="wpp-dot" id="wppDot"></div>
+        <div class="wpp-status-txt" id="wppTxt">Aguardando conexão</div>
+      </div>
+    </div>
+    <div style="background:rgba(237,228,214,0.5);border-radius:var(--radius-sm);padding:12px 14px;font-size:0.76rem;color:var(--mid);line-height:1.5;">
+      ⏭ Você pode pular esta etapa e conectar o WhatsApp depois nas configurações.
+    </div>
+  </div>
+
+  <!-- ── STEP 6: PLANO ── -->
+  <div class="step-panel" id="step6">
+    <div class="step-header">
+      <div class="step-badge">Passo 6 de 6</div>
+      <div class="step-title">Escolha seu plano</div>
+      <div class="step-desc">10 dias grátis em qualquer plano. Cancele quando quiser, sem multa.</div>
+    </div>
+    <div class="plano-grid">
+      <div class="plano-card" onclick="selectPlano(this)">
+        <div class="plano-radio"></div>
+        <div class="plano-body">
+          <div class="plano-name">Solo</div>
+          <div class="plano-price">R$67 <small>/mês · 1 profissional</small></div>
+          <div class="plano-features">Agendamento online · Lembretes automáticos · Perfil da cliente · Relatórios básicos</div>
+        </div>
+      </div>
+      <div class="plano-card popular selected" onclick="selectPlano(this)">
+        <div class="plano-popular-tag">✨ Mais popular</div>
+        <div class="plano-radio"></div>
+        <div class="plano-body">
+          <div class="plano-name">Studio</div>
+          <div class="plano-price">R$147 <small>/mês · até 5 profissionais</small></div>
+          <div class="plano-features">Tudo do Solo + Agente IA no WhatsApp · Reativação automática · Portfólio por cliente · Lista de espera</div>
+        </div>
+      </div>
+      <div class="plano-card" onclick="selectPlano(this)">
+        <div class="plano-radio"></div>
+        <div class="plano-body">
+          <div class="plano-name">Salão</div>
+          <div class="plano-price">R$297 <small>/mês · ilimitado</small></div>
+          <div class="plano-features">Tudo do Studio + Comissões e cadeira · Multi-unidades · Relatórios avançados · Suporte prioritário</div>
+        </div>
+      </div>
+    </div>
+    <div style="background:rgba(76,175,125,0.08);border-radius:var(--radius-sm);padding:14px 16px;margin-top:14px;font-size:0.78rem;color:#3a9966;line-height:1.5;">
+      🎁 <strong>10 dias grátis</strong> no plano escolhido. Cartão de crédito só é necessário após o trial.
+    </div>
+  </div>
+
+  <!-- ── SUCESSO ── -->
+  <div class="step-panel" id="step-success">
+    <div class="success-screen">
+      <div class="success-animation">🎉</div>
+      <div class="success-title">Seu salão está pronto!</div>
+      <div class="success-desc">Tudo configurado. Compartilhe seu link de agendamento com as clientes e assista a agenda encher.</div>
+
+      <div class="card" style="text-align:left;margin-bottom:20px;">
+        <div style="font-size:0.72rem;font-weight:600;color:var(--soft);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Seu link de agendamento</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="flex:1;background:var(--cream);border-radius:8px;padding:10px 14px;font-size:0.82rem;color:var(--dark);word-break:break-all;">vemsecuidar.com.br/<strong>salaodacarol</strong></div>
+          <button class="btn-wpp-connect" style="border-radius:8px;padding:10px 14px;font-size:0.78rem;" onclick="alert('Link copiado! ✓')">Copiar</button>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <div class="cl-item"><span class="cl-icon">✓</span>Tipo de negócio configurado</div>
+        <div class="cl-item"><span class="cl-icon">✓</span>Dados do salão salvos</div>
+        <div class="cl-item"><span class="cl-icon">✓</span>Profissionais adicionadas</div>
+        <div class="cl-item"><span class="cl-icon">✓</span>Serviços e preços definidos</div>
+        <div class="cl-item"><span class="cl-icon">✓</span>Horários configurados</div>
+        <div class="cl-item"><span class="cl-icon">✓</span>Plano Studio ativado (10 dias grátis)</div>
+      </div>
+
+      <button class="btn-next" style="width:100%;border-radius:14px;" onclick="window.location.href='02-admin-dashboard.html'">
+        Acessar o painel →
+      </button>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- BOTTOM BAR -->
+<div class="bottom-bar" id="bottomBar">
+  <div class="bottom-inner">
+    <button class="btn-back" id="btnBack" onclick="prevStep()" style="display:none;">← Voltar</button>
+    <div class="step-counter" id="stepCounter">Passo 1 de 6</div>
+    <button class="btn-next" id="btnNext" onclick="nextStep()">Continuar →</button>
+  </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 6;
+const profColors = ['#4A90D9','#F5A623','#4CAF7D','#9E8070'];
+let profCount = 0;
+
+function nextStep() {
+  if (currentStep < totalSteps) {
+    currentStep++;
+    showStep(currentStep);
+  } else {
+    // Show success
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('step-success').classList.add('active');
+    document.getElementById('bottomBar').style.display = 'none';
+    document.getElementById('progressFill').style.width = '100%';
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) { currentStep--; showStep(currentStep); }
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  document.getElementById('progressFill').style.width = ((n / totalSteps) * 100) + '%';
+  document.getElementById('stepCounter').textContent = 'Passo ' + n + ' de ' + totalSteps;
+  document.getElementById('btnBack').style.display = n > 1 ? '' : 'none';
+  document.getElementById('btnNext').textContent = n === totalSteps ? 'Finalizar e entrar →' : 'Continuar →';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectNicho(card) {
+  document.querySelectorAll('.nicho-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+
+function toggleServico(item) {
+  item.classList.toggle('selected');
+  const check = item.querySelector('.servico-check');
+  check.textContent = item.classList.contains('selected') ? '✓' : '';
+}
+
+function addProf() {
+  const names = ['Beatriz Santos','Patrícia Alves','Luciana Ferreira','Gabriela Nunes'];
+  const roles = ['Manicure · Autônoma','Cabeleireira · CLT','Colorista · Autônoma','Esteticista · CLT'];
+  const list = document.getElementById('profList');
+  const card = document.createElement('div');
+  card.className = 'prof-card';
+  card.style.animation = 'fadeUp 0.2s ease';
+  card.innerHTML = `
+    <div class="prof-avatar" style="background:${profColors[profCount % 4]};">${names[profCount % 4][0]}</div>
+    <div class="prof-info">
+      <div class="prof-name">${names[profCount % 4]}</div>
+      <div class="prof-role">${roles[profCount % 4]}</div>
+    </div>
+    <div class="prof-remove" onclick="this.parentElement.remove()">✕</div>
+  `;
+  list.appendChild(card);
+  profCount++;
+}
+
+function toggleHorario(tog) {
+  tog.classList.toggle('on');
+  const row = tog.closest('.horario-row');
+  row.classList.toggle('fechado', !tog.classList.contains('on'));
+}
+
+function connectWpp() {
+  const num = document.getElementById('wppNumber').value.trim();
+  if (!num) { alert('Digite o número do WhatsApp.'); return; }
+  document.getElementById('wppDot').classList.add('connected');
+  document.getElementById('wppTxt').textContent = 'Conectado: ' + num + ' ✓';
+  document.getElementById('wppTxt').style.color = 'rgba(76,175,125,0.8)';
+}
+
+function selectPlano(card) {
+  document.querySelectorAll('.plano-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+</script>
+</body>
+</html>
